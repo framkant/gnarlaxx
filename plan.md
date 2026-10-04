@@ -118,6 +118,12 @@ like a large variant of the drone and roams the top of the screen.
 
 ## Milestones
 
+Current status (2026-10-04): the shared asset package is prepared and validated;
+see [asset documentation](assets/README.md) and the
+[development journal](docs/journal/README.md). M0's library and runtime
+integration work is still pending. Add numbered journal entries at meaningful
+checkpoints, alongside regular Git commits.
+
 ### M0: establish the smallest workable foundation
 
 - Check Sokol integration for C, Odin, and Zig sufficiently to confirm the
