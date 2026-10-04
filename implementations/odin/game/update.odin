@@ -6,6 +6,7 @@ update :: proc(g: ^Game, input: Input, dt: f32) -> bool {
     compact(&g.enemies); compact(&g.bullets); compact(&g.explosions)
     return g.allocation_error == .None
 }
+
 update_scene :: proc(g: ^Game, input: Input, dt: f32) {
     g.ui_time += dt
     if input.sound && g.scene != .Sound { g.sound_return = g.scene; g.scene = .Sound; return }

@@ -21,3 +21,5 @@ commits alongside the journal.
 8. [Shared audio and dynamic comparison scope](0008_shared_audio_and_dynamic_comparison_scope_20261004.md)
 9. [Extracting shared audio and tagging the C reference](0009_extracting_shared_audio_and_tagging_c_reference_20261004.md)
 10. [Dynamic C comparison baseline](0010_dynamic_c_comparison_baseline_20261004.md)
+11. [Starting the Odin port](0011_starting_the_odin_port_20261004.md)
+12. [Completing and verifying Odin](0012_completing_and_verifying_odin_20261004.md)

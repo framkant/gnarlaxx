@@ -21,9 +21,12 @@ for key, values in (("ATLAS", manifest["atlas"]["size"]),
         lines.append("{}_{} :: {}".format(key, suffix, value))
 for key in ("columns", "first_codepoint", "count", "advance"):
     lines.append("FONT_{} :: {}".format(key.upper(), manifest["font"][key]))
+pattern = manifest["background"]["pattern"]
 lines += ["BACKGROUND_TILE_SIZE :: {}".format(manifest["background"]["tile_size"]),
-          "BACKGROUND_PATTERN :: [2][2]int{{0, 1}, {2, 3}}"]
-assert manifest["background"]["pattern"] == [[0, 1], [2, 3]]
+          "BACKGROUND_PATTERN_ROWS :: {}".format(len(pattern)),
+          "BACKGROUND_PATTERN_COLUMNS :: {}".format(len(pattern[0])),
+          "BACKGROUND_PATTERN :: [BACKGROUND_PATTERN_ROWS][BACKGROUND_PATTERN_COLUMNS]int{" +
+          ", ".join("{" + ", ".join(map(str, row)) + "}" for row in pattern) + "}"]
 for part in ("left_gun", "right_gun", "core"):
     for axis, value in zip(("X", "Y"), manifest["boss"][part + "_offset"]):
         lines.append("BOSS_{}_OFFSET_{} :: {}".format(part.upper(), axis, value))

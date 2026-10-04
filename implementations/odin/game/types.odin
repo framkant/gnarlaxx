@@ -12,15 +12,18 @@ Sound :: enum u32 {
     Player_Shot, Enemy_Shot, Hit, Explosion, Boss_Explosion, Warning,
     Menu_Confirm, Boss_Ram, Intro_Warning, Intro_Go,
 }
+
 Input :: struct {
     x, y: f32,
     fire, confirm, cancel, up, down, left, right, sound, menu: bool,
 }
+
 Player :: struct {
     pos, velocity: Vec2,
     invincible, shot_timer: f32,
     lives: int,
 }
+
 Enemy :: struct {
     active: bool,
     kind: Enemy_Kind,
@@ -28,6 +31,7 @@ Enemy :: struct {
     age, base_x, shot_timer: f32,
     wave, slot: int,
 }
+
 Bullet :: struct { active, enemy: bool, pos, velocity: Vec2 }
 Explosion :: struct { active: bool, pos: Vec2, age, scale: f32 }
 Boss :: struct {
@@ -37,6 +41,7 @@ Boss :: struct {
     phase: Boss_Phase,
     timer, shot_timer, retract, flash: f32,
 }
+
 Sound_Event :: struct { sound: Sound, gain: f32 }
 Finished_Event :: struct { score: int }
 Event :: union { Sound_Event, Finished_Event }

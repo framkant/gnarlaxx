@@ -7,18 +7,22 @@ toward :: proc(from, to: Vec2, speed: f32) -> Vec2 {
     length := math.sqrt(delta.x*delta.x + delta.y*delta.y)
     return delta / length * speed if length > .001 else Vec2{0, speed}
 }
+
 near :: proc(a, b: Vec2, radius: f32) -> bool {
     d := a - b
     return d.x*d.x + d.y*d.y < radius*radius
 }
+
 hit_box :: proc(p, center: Vec2, half_w, half_h: f32) -> bool {
     return abs(p.x-center.x) < half_w && abs(p.y-center.y) < half_h
 }
+
 formation_x :: proc(slot, count: int, side_margin: f32) -> f32 {
     if count == 1 { return GAME_CENTER_X }
     spacing := (GAME_WIDTH - 2*side_margin) / f32(count-1)
     return side_margin + spacing*f32(slot)
 }
+
 spawn_wave :: proc(g: ^Game) {
     wave := g.waves_spawned
     g.waves_spawned += 1
@@ -34,6 +38,7 @@ spawn_wave :: proc(g: ^Game) {
         }) { return }
     }
 }
+
 spawn_drone :: proc(g: ^Game) {
     lane := g.drones_spawned % DRONE_LANE_COUNT
     g.drones_spawned += 1
@@ -41,6 +46,7 @@ spawn_drone :: proc(g: ^Game) {
     y := -f32(SPRITE_RECTS[.Drone_0].h)*.5 - DRONE_SPAWN_GAP
     push(g, &g.enemies, Enemy{active = true, kind = .Drone, pos = {x, y}})
 }
+
 update_enemies :: proc(g: ^Game, dt: f32) {
     for &e in g.enemies {
         if !e.active { continue }
@@ -78,6 +84,7 @@ update_enemies :: proc(g: ^Game, dt: f32) {
         if e.active && near(e.pos, g.player.pos, ENEMY_CONTACT_RADIUS) { damage_player(g) }
     }
 }
+
 boss_gun :: proc(b: ^Boss, right: bool) -> Vec2 {
     rect := sprite_rect(.Boss_Gun_Right if right else .Boss_Gun_Left)
     offset_x := f32(BOSS_RIGHT_GUN_OFFSET_X if right else BOSS_LEFT_GUN_OFFSET_X)
@@ -86,11 +93,13 @@ boss_gun :: proc(b: ^Boss, right: bool) -> Vec2 {
     center_x += (-1 if right else 1)*BOSS_RETRACT_DISTANCE*b.retract
     return {b.pos.x+center_x, b.pos.y+(offset_y-BOSS_HALF_HEIGHT+f32(rect.h)*.5)}
 }
+
 boss_core :: proc(b: ^Boss) -> Vec2 {
     rect := SPRITE_RECTS[.Boss_Core]
     return b.pos + Vec2{BOSS_CORE_OFFSET_X-BOSS_HALF_WIDTH+f32(rect.w)*.5,
                         BOSS_CORE_OFFSET_Y-BOSS_HALF_HEIGHT+f32(rect.h)*.5}
 }
+
 spawn_boss :: proc(g: ^Game) -> bool {
     if g.allocation_error != .None { return false }
     g.boss = {active = true, pos = {GAME_CENTER_X, -BOSS_HALF_HEIGHT-BOSS_SPAWN_GAP},
@@ -98,6 +107,7 @@ spawn_boss :: proc(g: ^Game) -> bool {
     sound(g, .Warning, .7)
     return g.allocation_error == .None
 }
+
 boss_phase :: proc(b: ^Boss, phase: Boss_Phase) { b.phase = phase; b.timer = 0 }
 boss_shoot :: proc(g: ^Game) {
     b := &g.boss
@@ -123,6 +133,7 @@ boss_shoot :: proc(g: ^Game) {
     }
     sound(g, .Enemy_Shot, .35)
 }
+
 update_boss :: proc(g: ^Game, dt: f32) {
     b := &g.boss
     if !b.active { return }
@@ -171,6 +182,7 @@ update_boss :: proc(g: ^Game, dt: f32) {
            near(g.player.pos, boss_gun(b, side != 0), BOSS_GUN_CONTACT_RADIUS) { damage_player(g) }
     }
 }
+
 hit_boss :: proc(g: ^Game, pos: Vec2) -> bool {
     b := &g.boss
     if !b.active { return false }
@@ -208,6 +220,7 @@ hit_boss :: proc(g: ^Game, pos: Vec2) -> bool {
     return hit_box(pos, b.pos, BOSS_HALF_WIDTH-BOSS_HULL_SHOT_INSET_X,
                    BOSS_HALF_HEIGHT-BOSS_HULL_SHOT_INSET_Y)
 }
+
 update_bullets :: proc(g: ^Game, dt: f32) {
     for &shot in g.bullets {
         if !shot.active { continue }
@@ -232,6 +245,7 @@ update_bullets :: proc(g: ^Game, dt: f32) {
         if g.scene != .Play { break }
     }
 }
+
 update_player :: proc(g: ^Game, input: Input, dt: f32) {
     p := &g.player
     direction := Vec2{input.x, input.y}

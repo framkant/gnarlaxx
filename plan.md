@@ -133,8 +133,12 @@ menus, pause, and score persistence. User playtesting and the properties cleanup
 are complete. M1a audio extraction is verified and preserved as
 `c-original-reference` (`9ce2512`). M1b dynamic C collections are implemented and
 verified, including growth, removal, allocation failure, replay, and cleanup.
-This is the baseline for the Odin and Zig ports, which have not started.
-See the [C build notes](implementations/c/README.md)
+This is the baseline for the Odin and Zig ports. M2 Odin is implemented and
+verified: the complete native mission matches C's score and timing; gameplay,
+allocation failures, persistence, shared audio, input and cleanup checks pass.
+Odin is ready for user playtesting. M3 Zig has not started.
+See the [C build notes](implementations/c/README.md),
+[Odin build notes](implementations/odin/README.md),
 and [development journal](docs/journal/README.md). Continue adding numbered journal
 entries at meaningful checkpoints alongside regular Git commits.
 

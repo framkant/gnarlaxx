@@ -8,6 +8,7 @@ import "core:fmt"
 advance :: proc(g: ^Game, steps: int, input: Input = {}) {
     for _ in 0..<steps { clear(&g.events); assert(update(g, input, GAME_STEP)) }
 }
+
 playing :: proc(g: ^Game) {
     init(g)
     assert(start(g))
@@ -61,6 +62,7 @@ movement_pause_and_flow :: proc(t: ^testing.T) {
     testing.expect(t, g.scene == .Menu)
     start(&g); testing.expect(t, g.volumes[.Master] == 1)
 }
+
 inject_hit :: proc(g: ^Game, pos: Vec2) {
     clear(&g.events); clear(&g.bullets)
     assert(push(g, &g.bullets, Bullet{active = true, pos = pos}))
