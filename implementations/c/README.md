@@ -69,7 +69,9 @@ for the first measurements and their limits.
   sprite sizes and boss part offsets come from the asset manifest.
 - `presentation.c` / `renderer.c`: turn game state into sprites and text; render
   to 400 × 500, then present at integer scale with letterboxing.
-- `audio.c`: decode once, mix music plus 24 voices, and adjust volume/resampling.
+- `sound_bank.c` / `sounds.h`: game sound IDs, paths, clip durations, and voice protection.
+- [`libs/audio`](../../libs/audio/README.md): shared C library for decoding, mixing,
+  volume/pause, and Sokol output, with an opaque interface for all three languages.
 - `scores.c`: validate, sort, and save the five-entry score list.
 - `platform.m` / `decoders.c`: instantiate the third-party libraries. Only the
   macOS platform glue and optional GPU capture use Objective-C.
@@ -78,3 +80,8 @@ for the first measurements and their limits.
 `python3 tools/generate_c_assets.py`. Formatting is described by `.clang-format`;
 do not reformat the vendored files or generated header. Full code walkthroughs
 and language evaluation remain deferred until the implementations are complete.
+
+The annotated tag `c-original-reference` preserves the verified post-audio-extraction
+implementation with fixed game arrays. It is the canonical C reference for the
+original task. The next stage introduces dynamic game collections; that version
+will be the comparison baseline for Odin and Zig.

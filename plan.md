@@ -130,8 +130,9 @@ like a large variant of the drone and roams the top of the screen.
 Current status (2026-10-04): M0 is complete. The first playable C version of M1
 is built and tested, including native rendering/audio, the complete mission,
 menus, pause, and score persistence. User playtesting and the properties cleanup
-are complete. The next steps are local audio extraction, a tagged original C
-reference, and dynamic C state before the Odin and Zig ports. See the [C build notes](implementations/c/README.md)
+are complete. M1a audio extraction is verified and preserved as
+`c-original-reference`; dynamic C state is next before the Odin and Zig ports.
+See the [C build notes](implementations/c/README.md)
 and [development journal](docs/journal/README.md). Continue adding numbered journal
 entries at meaningful checkpoints alongside regular Git commits.
 

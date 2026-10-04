@@ -19,3 +19,4 @@ commits alongside the journal.
 6. [Expressing geometry through properties](0006_expressing_geometry_through_properties_20261004.md)
 7. [Reflecting on the C architecture](0007_reflecting_on_c_architecture_20261004.md)
 8. [Shared audio and dynamic comparison scope](0008_shared_audio_and_dynamic_comparison_scope_20261004.md)
+9. [Extracting shared audio and tagging the C reference](0009_extracting_shared_audio_and_tagging_c_reference_20261004.md)

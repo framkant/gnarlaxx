@@ -1,6 +1,5 @@
 #include "game.h"
 #include "scores.h"
-#include "audio.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -204,48 +203,6 @@ static void test_scores(void) {
     remove(path);
     puts("score sorting, round-trip persistence, corrupt/missing files, write failure: passed");
 }
-static void test_audio(void) {
-    Audio a;
-    CHECK(audio_load(&a, TEST_ASSET_ROOT));
-    CHECK(a.music.frames > 0 && a.decoded_bytes > 0);
-    a.music_volume = 0;
-    for (int i = 0; i < 8; i++)
-        audio_play(&a, SOUND_PLAYER_SHOT, .5f);
-    float buffer[8192];
-    audio_mix(&a, buffer, 4096, 48000);
-    int active = 0;
-    for (int i = 0; i < AUDIO_VOICES; i++)
-        active += a.voices[i].active;
-    CHECK(active == 8);
-    float peak = 0;
-    for (int i = 0; i < 8192; i++) {
-        CHECK(isfinite(buffer[i]) && fabsf(buffer[i]) <= 1);
-        if (fabsf(buffer[i]) > peak)
-            peak = fabsf(buffer[i]);
-    }
-    CHECK(peak > .001f);
-    CHECK(fabs(a.voices[0].cursor - 4096. * 44100 / 48000) < .001);
-    a.paused = true;
-    double cursor = a.voices[0].cursor;
-    audio_mix(&a, buffer, 4096, 48000);
-    CHECK(a.voices[0].cursor == cursor);
-    for (int i = 0; i < 8192; i++)
-        CHECK(buffer[i] == 0);
-    a.paused = false;
-    audio_stop_effects(&a);
-    a.music_volume = .3f;
-    a.music_cursor = (double)a.music.frames - 5;
-    audio_mix(&a, buffer, 4096, 44100);
-    CHECK(a.music_cursor < 4096);
-    a.master_volume = 0;
-    audio_mix(&a, buffer, 4096, 44100);
-    for (int i = 0; i < 8192; i++)
-        CHECK(buffer[i] == 0);
-    audio_destroy(&a);
-    CHECK(a.music.data == NULL);
-    puts("real assets, eight simultaneous effects, resampling, pause, music wrap, mute, cleanup: "
-         "passed");
-}
 int main(void) {
     test_movement_and_firing();
     test_briefing_and_menu();
@@ -254,7 +211,6 @@ int main(void) {
     test_boss_damage_and_victory();
     test_player_damage();
     test_scores();
-    test_audio();
-    puts("All C simulation, persistence, and mixer checks passed.");
+    puts("All C simulation and persistence checks passed.");
     return 0;
 }

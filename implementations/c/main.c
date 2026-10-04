@@ -1,10 +1,9 @@
-#include "audio.h"
+#include "sound_bank.h"
 #include "game.h"
 #include "presentation.h"
 #include "renderer.h"
 #include "scores.h"
 #include "sokol_app.h"
-#include "sokol_audio.h"
 #include "sokol_log.h"
 #include "sokol_time.h"
 #include <errno.h>
@@ -17,7 +16,7 @@
 
 static struct {
     Game game;
-    Audio audio;
+    GnaAudio *audio;
     Scores scores;
     bool held[SAPP_MAX_KEYCODES], pressed[SAPP_MAX_KEYCODES];
     bool save_failed, audio_available, demo, mute;
@@ -90,23 +89,22 @@ static void init(void) {
     game_init(&app.game);
     score_path();
     scores_load(&app.scores, app.score_path);
-    if (!renderer_init(app.asset_root) || !audio_load(&app.audio, app.asset_root))
+    if (!renderer_init(app.asset_root))
         exit(1);
-    saudio_setup(&(saudio_desc){.sample_rate = 44100,
-                                .num_channels = 2,
-                                .buffer_frames = 512,
-                                .packet_frames = 128,
-                                .num_packets = 16,
-                                .logger.func = slog_func});
-    app.audio_available = saudio_isvalid();
+    app.audio = sound_bank_load(app.asset_root);
+    if (!app.audio) {
+        renderer_shutdown();
+        exit(1);
+    }
+    app.audio_available = gna_device_open(app.audio) != 0;
     if (app.mute)
         app.game.volumes[VOLUME_MASTER] = 0;
     set_diagnostic_scene();
     if (app.demo && !app.diagnostic_scene)
         game_start(&app.game);
     printf("Gnarlaxx C: Metal; audio=%s (%d Hz); decoded audio=%.2f MiB; game state=%zu bytes\n",
-           app.audio_available ? "ready" : "unavailable", saudio_sample_rate(),
-           app.audio.decoded_bytes / 1048576.0, sizeof(Game));
+           app.audio_available ? "ready" : "unavailable", gna_device_rate(app.audio),
+           gna_decoded_bytes(app.audio) / 1048576.0, sizeof(Game));
     fflush(stdout);
     app.started = stm_now();
 }
@@ -154,7 +152,7 @@ static void process_events(void) {
                     fprintf(stderr, "Could not save scores to %s\n", app.score_path);
             }
         } else
-            audio_play(&app.audio, e->sound, e->gain);
+            gna_play(app.audio, e->sound, e->gain);
     }
     app.game.event_count = 0;
 }
@@ -168,28 +166,15 @@ static void frame(void) {
         if ((app.game.scene == SCENE_BRIEFING && previous != SCENE_BRIEFING &&
              previous != SCENE_PAUSE && previous != SCENE_SOUND) ||
             (app.game.scene == SCENE_MENU && previous != SCENE_MENU))
-            audio_stop_effects(&app.audio);
+            gna_stop_effects(app.audio);
         process_events();
         app.accumulator -= GAME_STEP;
     }
-    app.audio.master_volume = app.game.volumes[VOLUME_MASTER];
-    app.audio.music_volume = app.game.volumes[VOLUME_MUSIC];
-    app.audio.effects_volume = app.game.volumes[VOLUME_EFFECTS];
-    app.audio.paused = app.game.scene == SCENE_PAUSE;
-    if (app.audio_available) {
-        int remaining = saudio_expect();
-        float buffer[2048];
-        while (remaining > 0) {
-            int n = remaining > 1024 ? 1024 : remaining;
-            audio_mix(&app.audio, buffer, n, saudio_sample_rate());
-            int pushed = saudio_push(buffer, n);
-            if (pushed != n) {
-                fprintf(stderr, "Audio queue accepted %d/%d frames\n", pushed, n);
-                break;
-            }
-            remaining -= n;
-        }
-    }
+    gna_set_volume(app.audio, app.game.volumes[VOLUME_MASTER], app.game.volumes[VOLUME_MUSIC],
+                   app.game.volumes[VOLUME_EFFECTS]);
+    gna_set_paused(app.audio, app.game.scene == SCENE_PAUSE);
+    if (app.audio_available && !gna_device_pump(app.audio))
+        fprintf(stderr, "Audio queue could not accept mixed frames\n");
     presentation_draw(&app.game, &app.scores, app.save_failed, app.audio_available);
     double work = stm_sec(stm_since(begin));
     app.work_seconds += work;
@@ -236,8 +221,7 @@ static void cleanup(void) {
            app.frames, elapsed, elapsed > 0 ? app.frames / elapsed : 0,
            app.frames ? app.work_seconds * 1000 / app.frames : 0, app.max_work_seconds * 1000, cpu,
            usage.ru_maxrss / 1048576.0);
-    saudio_shutdown();
-    audio_destroy(&app.audio);
+    gna_destroy(app.audio);
     renderer_shutdown();
 }
 

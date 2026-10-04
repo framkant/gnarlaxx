@@ -1,6 +1,6 @@
 #ifndef GNARLAXX_GAME_H
 #define GNARLAXX_GAME_H
-#include "audio.h"
+#include "sounds.h"
 #include "properties.h"
 #include <stdbool.h>
 
