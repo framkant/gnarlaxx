@@ -1,10 +1,10 @@
 #ifndef GNARLAXX_GAME_H
 #define GNARLAXX_GAME_H
 #include "audio.h"
+#include "properties.h"
 #include <stdbool.h>
 
 enum { MAX_ENEMIES = 48, MAX_BULLETS = 512, MAX_EXPLOSIONS = 48, MAX_EVENTS = 64 };
-#define GAME_STEP (1.0f / 120.0f)
 typedef struct Vec2 {
     float x, y;
 } Vec2;
@@ -18,6 +18,8 @@ typedef enum Scene {
     SCENE_VICTORY,
     SCENE_GAME_OVER
 } Scene;
+enum { MENU_START, MENU_SCORES, MENU_SOUND, MENU_QUIT, MENU_COUNT };
+enum { VOLUME_MASTER, VOLUME_MUSIC, VOLUME_EFFECTS, VOLUME_COUNT };
 typedef enum EnemyKind { ENEMY_PAWN, ENEMY_DRONE } EnemyKind;
 typedef enum BossPhase {
     BOSS_ENTER,
@@ -75,7 +77,7 @@ typedef struct Game {
     Boss boss;
     GameEvent events[MAX_EVENTS];
     int event_count, menu_choice, volume_choice, score, waves_spawned, drones_spawned;
-    float volumes[3], ui_time, scene_time, level_time, scroll, fade, damage_flash;
+    float volumes[VOLUME_COUNT], ui_time, scene_time, level_time, scroll, fade, damage_flash;
     bool quit_requested;
 } Game;
 
@@ -84,5 +86,6 @@ void game_start(Game *game);
 void game_update(Game *game, Input input, float dt);
 void game_pause(Game *game);
 Vec2 game_boss_gun(const Boss *boss, bool right);
+Vec2 game_boss_core(const Boss *boss);
 void game_spawn_boss(Game *game); // Also used by the diagnostic --scene boss.
 #endif

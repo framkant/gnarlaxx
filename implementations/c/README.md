@@ -64,6 +64,9 @@ for the first measurements and their limits.
 
 - `main.c`: input, fixed simulation steps, sound/score events, and app lifetime.
 - `game.c`: game state, movement, enemy scheduling, collisions, boss, and menus.
+- `properties.h`: gameplay tuning and dimensions derived from the playfield and
+  assets. Formation spacing uses the available width, side margins, and ship count;
+  sprite sizes and boss part offsets come from the asset manifest.
 - `presentation.c` / `renderer.c`: turn game state into sprites and text; render
   to 400 × 500, then present at integer scale with letterboxing.
 - `audio.c`: decode once, mix music plus 24 voices, and adjust volume/resampling.
@@ -71,7 +74,7 @@ for the first measurements and their limits.
 - `platform.m` / `decoders.c`: instantiate the third-party libraries. Only the
   macOS platform glue and optional GPU capture use Objective-C.
 
-`assets.h` is checked-in generated data. If atlas rectangles change, run
+`assets.h` is checked-in generated data. If asset geometry in the manifest changes, run
 `python3 tools/generate_c_assets.py`. Formatting is described by `.clang-format`;
 do not reformat the vendored files or generated header. Full code walkthroughs
 and language evaluation remain deferred until the implementations are complete.

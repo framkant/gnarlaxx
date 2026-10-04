@@ -1,0 +1,127 @@
+#ifndef GNARLAXX_PROPERTIES_H
+#define GNARLAXX_PROPERTIES_H
+#include "assets.h"
+
+// Logical pixels, seconds, pixels/second, and radians unless stated otherwise.
+enum { GAME_WIDTH = 400, GAME_HEIGHT = 500, HUD_HEIGHT = 30, WINDOW_SCALE = 2 };
+#define GAME_CENTER_X (GAME_WIDTH * .5f)
+#define GAME_STEP (1.0f / 120.0f)
+
+enum { PLAYER_LIVES = 3, PAWN_WAVE_COUNT = 10, PAWNS_PER_WAVE = 5, DRONE_COUNT = 5 };
+#define FIRST_WAVE_TIME .5f
+#define WAVE_INTERVAL 4.5f
+#define FIRST_DRONE_TIME 7.0f
+#define DRONE_INTERVAL 9.0f
+
+#define PLAYER_SPAWN_BOTTOM_INSET 80.0f
+#define PLAYER_ENTRY_MARGIN 35.0f // Center starts this far below the playfield.
+#define PLAYER_SPAWN_Y (GAME_HEIGHT - PLAYER_SPAWN_BOTTOM_INSET)
+#define PLAYER_ENTRY_Y (GAME_HEIGHT + PLAYER_ENTRY_MARGIN)
+#define PLAYER_HALF_WIDTH (SPRITE_RECTS[SPR_PLAYER_IDLE].w * .5f)
+#define PLAYER_HALF_HEIGHT (SPRITE_RECTS[SPR_PLAYER_IDLE].h * .5f)
+#define PLAYER_ACCELERATION 1800.0f
+#define PLAYER_DRAG 8.0f // Exponential decay rate, per second.
+#define PLAYER_INVINCIBILITY_TIME 2.5f
+#define PLAYER_SHOT_SPEED 620.0f
+#define PLAYER_SHOT_INTERVAL .14f
+#define PLAYER_MUZZLE_GAP 2.0f // Beyond the front of the ship sprite.
+#define PLAYER_BANK_SPEED 35.0f
+
+// Formation margins measure from the screen edge to the outermost ship CENTER.
+// Counts include both endpoints; one ship is centered. Gaps are beyond sprite edges.
+#define PAWN_SIDE_MARGIN 60.0f
+#define PAWN_SPAWN_GAP 12.0f
+#define PAWN_ROW_STAGGER 18.0f
+#define PAWN_SPEED 55.0f
+#define PAWN_SWAY_AMPLITUDE 32.0f
+#define PAWN_SWAY_RATE 1.6f
+#define PAWN_WAVE_PHASE .7f
+#define PAWN_FIRST_SHOT_DELAY 1.4f
+#define PAWN_SHOT_STAGGER .18f
+#define PAWN_SHOT_INTERVAL 2.7f
+#define PAWN_SHOT_SPEED 95.0f
+#define PAWN_MIN_SHOT_SPEED_Y 65.0f
+#define PAWN_SHOOT_BOTTOM_INSET 140.0f
+
+enum { DRONE_LANE_COUNT = 5 };
+#define DRONE_SIDE_MARGIN 70.0f
+#define DRONE_SPAWN_GAP 8.0f
+#define DRONE_APPROACH_SPEED 85.0f
+#define DRONE_CHARGE_SPEED 260.0f
+#define DRONE_STEERING_RATE 3.0f
+#define DRONE_APPROACH_TIME 1.4f
+#define DRONE_WARNING_TIME .7f
+#define DRONE_CHARGE_TIME (DRONE_APPROACH_TIME + DRONE_WARNING_TIME)
+#define DRONE_HOMING_TIME .6f
+#define DRONE_HOMING_END (DRONE_CHARGE_TIME + DRONE_HOMING_TIME)
+#define DRONE_LIFETIME 7.0f
+
+// Collision circles are tuned to the visible artwork inside transparent sprites.
+#define PLAYER_HURT_RADIUS 10.0f
+#define ENEMY_HURT_RADIUS 16.0f
+#define ENEMY_CONTACT_RADIUS 22.0f
+#define ENEMY_CULL_MARGIN_X 60.0f
+#define ENEMY_CULL_MARGIN_Y 40.0f
+#define BULLET_CULL_MARGIN_X 20.0f
+#define BULLET_CULL_MARGIN_Y 24.0f
+
+enum { BOSS_GUN_HP = 10, BOSS_CORE_HP = 10, BOSS_GUN_SHOTS = 3, BOSS_CORE_SHOTS = 5 };
+#define BOSS_HALF_WIDTH (SPRITE_RECTS[SPR_BOSS_BODY].w * .5f)
+#define BOSS_HALF_HEIGHT (SPRITE_RECTS[SPR_BOSS_BODY].h * .5f)
+#define BOSS_SPAWN_GAP 22.0f
+#define BOSS_TOP_GAP 14.0f // Between the HUD and the resting boss's top edge.
+#define BOSS_REST_Y (HUD_HEIGHT + BOSS_TOP_GAP + BOSS_HALF_HEIGHT)
+#define BOSS_ENTRY_SPEED 65.0f
+#define BOSS_ROAM_AMPLITUDE 85.0f
+#define BOSS_SWAY_RATE 1.2f
+#define BOSS_FIRE_DRIFT_SPEED 35.0f
+#define BOSS_FIRE_SIDE_MARGIN 95.0f
+#define BOSS_RETRACT_DISTANCE 35.0f
+#define BOSS_EXTEND_RATE 2.0f
+#define BOSS_ROAM_TIME .8f
+#define BOSS_WARNING_TIME .9f
+#define BOSS_FIRE_TIME 3.0f
+#define BOSS_RETRACT_TIME .65f
+#define BOSS_RAM_TRAVEL_TIME .75f
+#define BOSS_RAM_HOLD_TIME .25f
+#define BOSS_RETURN_TIME 1.5f
+#define BOSS_RAM_SIDE_MARGIN 65.0f
+#define BOSS_RAM_MIN_Y 190.0f
+#define BOSS_RAM_BOTTOM_INSET 80.0f
+#define BOSS_SWEEP_RATE 2.3f
+#define BOSS_SWEEP_ANGLE .55f
+#define BOSS_GUN_SHOT_ANGLE .28f
+#define BOSS_CORE_SHOT_ANGLE .24f
+#define BOSS_GUN_SHOT_SPEED 105.0f
+#define BOSS_CORE_SHOT_SPEED 125.0f
+#define BOSS_GUN_SHOT_INTERVAL .38f
+#define BOSS_CORE_SHOT_INTERVAL .18f
+#define BOSS_GUN_MUZZLE_INSET 2.0f
+#define BOSS_SHOT_HIT_PADDING 2.0f
+#define BOSS_HULL_SHOT_INSET_X 5.0f
+#define BOSS_HULL_SHOT_INSET_Y 6.0f
+#define BOSS_HULL_CONTACT_INSET_X 1.0f
+#define BOSS_HULL_CONTACT_INSET_Y 3.0f
+#define BOSS_GUN_CONTACT_RADIUS 25.0f
+#define BOSS_HIT_FLASH_TIME .10f
+
+enum {
+    PAWN_SCORE = 100,
+    DRONE_SCORE = 250,
+    BOSS_GUN_SCORE = 500,
+    VICTORY_SCORE = 2000,
+    SURVIVING_LIFE_SCORE = 250
+};
+#define BRIEFING_FADE_TIME .7f
+#define BRIEFING_ENTRY_DELAY .3f
+#define BRIEFING_ENTRY_TIME 1.5f
+#define BRIEFING_WARNING_TIME .8f
+#define BRIEFING_GO_TIME 4.0f
+#define BRIEFING_END_TIME 6.8f
+#define BACKGROUND_SCROLL_SPEED 9.0f
+#define BACKGROUND_NEAR_SPEED_RATIO 2.7f
+enum { EXPLOSION_FRAMES = SPR_EXPLOSION_4 - SPR_EXPLOSION_0 + 1 };
+#define EXPLOSION_FPS 10.0f
+#define EXPLOSION_DURATION (EXPLOSION_FRAMES / EXPLOSION_FPS)
+#define RESULT_EXPLOSION_HOLD .1f
+#endif

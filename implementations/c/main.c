@@ -61,13 +61,13 @@ static void set_diagnostic_scene(void) {
         return;
     g->scene = SCENE_PLAY;
     g->fade = 0;
-    g->player.pos = (Vec2){200, 420};
+    g->player.pos = (Vec2){GAME_CENTER_X, PLAYER_SPAWN_Y};
     if (!strcmp(scene, "play"))
         return;
-    g->waves_spawned = 10;
-    g->drones_spawned = 5;
+    g->waves_spawned = PAWN_WAVE_COUNT;
+    g->drones_spawned = DRONE_COUNT;
     game_spawn_boss(g);
-    g->boss.pos = (Vec2){200, 92};
+    g->boss.pos = (Vec2){GAME_CENTER_X, BOSS_REST_Y};
     g->boss.phase = BOSS_ROAM;
     if (!strcmp(scene, "core")) {
         g->boss.left_hp = 0;
@@ -100,7 +100,7 @@ static void init(void) {
                                 .logger.func = slog_func});
     app.audio_available = saudio_isvalid();
     if (app.mute)
-        app.game.volumes[0] = 0;
+        app.game.volumes[VOLUME_MASTER] = 0;
     set_diagnostic_scene();
     if (app.demo && !app.diagnostic_scene)
         game_start(&app.game);
@@ -127,7 +127,7 @@ static Input input(void) {
                 .menu = app.pressed[SAPP_KEYCODE_Q]};
     if (app.demo && app.game.scene == SCENE_PLAY) {
         // A diagnostic autopilot for captures/profiling; it never records scores.
-        float target = 200 + sinf(app.game.level_time * .9f) * 125;
+        float target = GAME_CENTER_X + sinf(app.game.level_time * .9f) * 125;
         if (app.game.boss.active) {
             const Boss *b = &app.game.boss;
             target = b->core_open ? b->pos.x : game_boss_gun(b, b->left_hp == 0).x;
@@ -172,9 +172,9 @@ static void frame(void) {
         process_events();
         app.accumulator -= GAME_STEP;
     }
-    app.audio.master_volume = app.game.volumes[0];
-    app.audio.music_volume = app.game.volumes[1];
-    app.audio.effects_volume = app.game.volumes[2];
+    app.audio.master_volume = app.game.volumes[VOLUME_MASTER];
+    app.audio.music_volume = app.game.volumes[VOLUME_MUSIC];
+    app.audio.effects_volume = app.game.volumes[VOLUME_EFFECTS];
     app.audio.paused = app.game.scene == SCENE_PAUSE;
     if (app.audio_available) {
         int remaining = saudio_expect();
@@ -284,8 +284,8 @@ sapp_desc sokol_main(int argc, char **argv) {
                        .frame_cb = frame,
                        .event_cb = event,
                        .cleanup_cb = cleanup,
-                       .width = 800,
-                       .height = 1000,
+                       .width = GAME_WIDTH * WINDOW_SCALE,
+                       .height = GAME_HEIGHT * WINDOW_SCALE,
                        .window_title = "Gnarlaxx - C",
                        .high_dpi = true,
                        .sample_count = 1,

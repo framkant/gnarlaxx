@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate compile-time atlas rectangles from the shared manifest (no runtime JSON)."""
+"""Generate compile-time asset geometry from the shared manifest (no runtime JSON)."""
 import json
 from pathlib import Path
 
@@ -15,5 +15,30 @@ lines += ["    SPR_COUNT", "} Sprite;", "",
           "static const AtlasRect SPRITE_RECTS[SPR_COUNT] = {"]
 for name, rect in manifest["sprites"].items():
     lines.append("    [SPR_" + name.upper() + "] = {" + ", ".join(map(str, rect)) + "},")
+lines += ["};", "", "enum {"]
+geometry = {
+    "ATLAS_WIDTH": manifest["atlas"]["size"][0],
+    "ATLAS_HEIGHT": manifest["atlas"]["size"][1],
+    "FONT_WIDTH": manifest["font"]["size"][0],
+    "FONT_HEIGHT": manifest["font"]["size"][1],
+    "FONT_CELL_WIDTH": manifest["font"]["cell"][0],
+    "FONT_CELL_HEIGHT": manifest["font"]["cell"][1],
+    "FONT_COLUMNS": manifest["font"]["columns"],
+    "FONT_FIRST_CODEPOINT": manifest["font"]["first_codepoint"],
+    "FONT_COUNT": manifest["font"]["count"],
+    "FONT_ADVANCE": manifest["font"]["advance"],
+    "BACKGROUND_TILE_SIZE": manifest["background"]["tile_size"],
+    "BACKGROUND_PATTERN_ROWS": len(manifest["background"]["pattern"]),
+    "BACKGROUND_PATTERN_COLUMNS": len(manifest["background"]["pattern"][0]),
+}
+for part in ("left_gun", "right_gun", "core"):
+    for axis, value in zip(("X", "Y"), manifest["boss"][part + "_offset"]):
+        geometry["BOSS_" + part.upper() + "_OFFSET_" + axis] = value
+for name, value in geometry.items():
+    lines.append("    {} = {},".format(name, value))
+lines += ["};", "", "static const int BACKGROUND_PATTERN[BACKGROUND_PATTERN_ROWS]"
+          "[BACKGROUND_PATTERN_COLUMNS] = {"]
+for row in manifest["background"]["pattern"]:
+    lines.append("    {" + ", ".join(map(str, row)) + "},")
 lines += ["};", "", "#endif", ""]
 (root / "implementations/c/assets.h").write_text("\n".join(lines))

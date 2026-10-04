@@ -16,3 +16,4 @@ commits alongside the journal.
 3. [Preparing the public repository](0003_preparing_public_repository_20261004.md)
 4. [Native C foundation](0004_native_c_foundation_20261004.md)
 5. [First playable C reference](0005_first_playable_c_reference_20261004.md)
+6. [Expressing geometry through properties](0006_expressing_geometry_through_properties_20261004.md)

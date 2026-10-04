@@ -1,10 +1,9 @@
 #ifndef GNARLAXX_RENDERER_H
 #define GNARLAXX_RENDERER_H
-#include "assets.h"
+#include "properties.h"
 #include <stdbool.h>
 #include <stdint.h>
 
-enum { GAME_WIDTH = 400, GAME_HEIGHT = 500 };
 // Colors are packed RRGGBBAA; sprite positions are top-left logical pixels.
 bool renderer_init(const char *asset_root);
 void renderer_shutdown(void);

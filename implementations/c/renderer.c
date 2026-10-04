@@ -102,8 +102,8 @@ void renderer_sprite(Sprite id, float x, float y, float scale, uint32_t color) {
     sgl_enable_texture();
     sgl_texture(r.atlas_view, r.sampler);
     tint(color);
-    quad(roundf(x), roundf(y), a.w * scale, a.h * scale, a.x / 512.f, a.y / 512.f, a.w / 512.f,
-         a.h / 512.f);
+    quad(roundf(x), roundf(y), a.w * scale, a.h * scale, (float)a.x / ATLAS_WIDTH,
+         (float)a.y / ATLAS_HEIGHT, (float)a.w / ATLAS_WIDTH, (float)a.h / ATLAS_HEIGHT);
 }
 
 void renderer_text(const char *text, float x, float y, int scale, uint32_t color) {
@@ -114,15 +114,19 @@ void renderer_text(const char *text, float x, float y, int scale, uint32_t color
     for (; *text; text++) {
         if (*text == '\n') {
             x = start;
-            y += 10 * scale;
+            const int line_gap = 2;
+            y += (FONT_CELL_HEIGHT + line_gap) * scale;
             continue;
         }
         unsigned code = (unsigned char)*text;
-        if (code >= 128)
+        if (code < FONT_FIRST_CODEPOINT || code >= FONT_FIRST_CODEPOINT + FONT_COUNT)
             code = '?';
-        quad(roundf(x), roundf(y), 8 * scale, 8 * scale, (code % 16) / 16.f, (code / 16) / 8.f,
-             1 / 16.f, 1 / 8.f);
-        x += 8 * scale;
+        unsigned cell = code - FONT_FIRST_CODEPOINT;
+        float u = (float)(cell % FONT_COLUMNS) * FONT_CELL_WIDTH / FONT_WIDTH;
+        float v = (float)(cell / FONT_COLUMNS) * FONT_CELL_HEIGHT / FONT_HEIGHT;
+        quad(roundf(x), roundf(y), FONT_CELL_WIDTH * scale, FONT_CELL_HEIGHT * scale, u, v,
+             (float)FONT_CELL_WIDTH / FONT_WIDTH, (float)FONT_CELL_HEIGHT / FONT_HEIGHT);
+        x += FONT_ADVANCE * scale;
     }
 }
 
