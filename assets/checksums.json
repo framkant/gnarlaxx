@@ -1,0 +1,17 @@
+{
+  "graphics/font.png": "07ccf5344a5dc398614c1c988675e4fc23d5ecb678ebfae0511f2d71c13e1800",
+  "graphics/level-cleared.png": "c4b4af6dca04b416d140c822c9a2ee9d1026b1f0998f1d633d1488c8f5da5f44",
+  "graphics/sprites.png": "9a15d2d565d1e1f34713274790b0ecda397d179402df716b63bbe62a8b7ed9ec",
+  "graphics/title.png": "29401197b6104029acf5c882b273b9197d20f1cc2a269d814953aac5934af5e9",
+  "audio/boss_explosion.wav": "75311d9215ecc4659a8b6bf1c3a64578045720d44c4fecbe99b04e7550b2bdf3",
+  "audio/boss_ram.wav": "09280b3d28e3da7d781097cfbb19938c1f9c812939f71a1b23042fa319b17dc4",
+  "audio/enemy_shot.wav": "424457d658684c92dc530e8a2c6d706203db6be902841cea65020ce808835a76",
+  "audio/explosion.wav": "40a27dc7b3df8220ab0be4f0fec6e983a6c2710321195058159e94926bcc83c5",
+  "audio/hit.wav": "3c0cff436adaf48990790c17adcac575659ea60d0d949482f4a8d6a2189aab18",
+  "audio/intro_go.wav": "56239f2e70218997f947c1bb69e04253652ad8d95f1dbf497e5022527dad053f",
+  "audio/intro_warning.wav": "afbb5c12b0e1cd4d0d7e55796b32dca1dcc5747a935f11c756137a40ad6afb91",
+  "audio/menu_confirm.wav": "23e15e2e36ef823f5be8cb3fe19791e9d1d21afe9cf36f6217ad82dfd4330c86",
+  "audio/music.mp3": "f8a232f6fc5a52d1ea85705447617a1d6132e63d993d63ad542c253f1b614b93",
+  "audio/player_shot.wav": "e632c937c504a8e10e164a039b271a7fb42fcfed7442f6d0fafb564bb50e5b7a",
+  "audio/warning.wav": "b38c33500b58d495f17eb65f3a8fdc9a1e51d20fca27fb2f6ac0a17c38a2e29d"
+}

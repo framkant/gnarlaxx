@@ -1,0 +1,353 @@
+{
+  "version": 1,
+  "atlas": {
+    "file": "graphics/sprites.png",
+    "size": [
+      512,
+      512
+    ],
+    "format": "RGBA8",
+    "alpha": "straight",
+    "filter": "nearest",
+    "coordinates": "top-left origin, [x, y, width, height] in pixels"
+  },
+  "sprites": {
+    "player_left": [
+      2,
+      2,
+      32,
+      32
+    ],
+    "player_idle": [
+      38,
+      2,
+      32,
+      32
+    ],
+    "player_right": [
+      74,
+      2,
+      32,
+      32
+    ],
+    "player_flame_0": [
+      110,
+      2,
+      32,
+      16
+    ],
+    "player_flame_1": [
+      146,
+      2,
+      32,
+      16
+    ],
+    "pawn_0": [
+      182,
+      2,
+      32,
+      32
+    ],
+    "pawn_1": [
+      218,
+      2,
+      32,
+      32
+    ],
+    "drone_0": [
+      254,
+      2,
+      32,
+      32
+    ],
+    "drone_1": [
+      290,
+      2,
+      32,
+      32
+    ],
+    "drone_2": [
+      326,
+      2,
+      32,
+      32
+    ],
+    "player_bullet": [
+      362,
+      2,
+      8,
+      16
+    ],
+    "enemy_bullet": [
+      374,
+      2,
+      8,
+      8
+    ],
+    "enemy_bullet_hot": [
+      386,
+      2,
+      8,
+      8
+    ],
+    "explosion_0": [
+      398,
+      2,
+      32,
+      32
+    ],
+    "explosion_1": [
+      434,
+      2,
+      32,
+      32
+    ],
+    "explosion_2": [
+      470,
+      2,
+      32,
+      32
+    ],
+    "explosion_3": [
+      2,
+      38,
+      32,
+      32
+    ],
+    "explosion_4": [
+      38,
+      38,
+      32,
+      32
+    ],
+    "spark": [
+      74,
+      38,
+      32,
+      32
+    ],
+    "life": [
+      110,
+      38,
+      16,
+      16
+    ],
+    "boss_body": [
+      130,
+      38,
+      96,
+      96
+    ],
+    "boss_gun_left": [
+      230,
+      38,
+      32,
+      48
+    ],
+    "boss_gun_right": [
+      266,
+      38,
+      32,
+      48
+    ],
+    "boss_core": [
+      302,
+      38,
+      32,
+      40
+    ],
+    "stars_far_0": [
+      338,
+      38,
+      32,
+      32
+    ],
+    "stars_far_1": [
+      374,
+      38,
+      32,
+      32
+    ],
+    "stars_far_2": [
+      410,
+      38,
+      32,
+      32
+    ],
+    "stars_far_3": [
+      446,
+      38,
+      32,
+      32
+    ],
+    "stars_near_0": [
+      2,
+      138,
+      32,
+      32
+    ],
+    "stars_near_1": [
+      38,
+      138,
+      32,
+      32
+    ],
+    "stars_near_2": [
+      74,
+      138,
+      32,
+      32
+    ],
+    "stars_near_3": [
+      110,
+      138,
+      32,
+      32
+    ],
+    "title": [
+      146,
+      138,
+      264,
+      40
+    ],
+    "level_cleared": [
+      2,
+      182,
+      216,
+      24
+    ]
+  },
+  "font": {
+    "file": "graphics/font.png",
+    "size": [
+      128,
+      64
+    ],
+    "cell": [
+      8,
+      8
+    ],
+    "columns": 16,
+    "first_codepoint": 0,
+    "count": 128,
+    "advance": 8
+  },
+  "boss": {
+    "body_size": [
+      96,
+      96
+    ],
+    "core_offset": [
+      32,
+      26
+    ],
+    "left_gun_offset": [
+      -27,
+      50
+    ],
+    "right_gun_offset": [
+      91,
+      50
+    ],
+    "note": "Offsets from body top-left. Retract pods toward body; show core only in final phase."
+  },
+  "background": {
+    "tile_size": 32,
+    "pattern": [
+      [
+        0,
+        1
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "layers": [
+      "far",
+      "near"
+    ],
+    "note": "Each layer repeats a 2x2 tile pattern."
+  },
+  "audio": {
+    "player_shot": {
+      "file": "audio/player_shot.wav",
+      "frames": 10382,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "enemy_shot": {
+      "file": "audio/enemy_shot.wav",
+      "frames": 10780,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "hit": {
+      "file": "audio/hit.wav",
+      "frames": 27999,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "explosion": {
+      "file": "audio/explosion.wav",
+      "frames": 34286,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "boss_explosion": {
+      "file": "audio/boss_explosion.wav",
+      "frames": 88202,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "warning": {
+      "file": "audio/warning.wav",
+      "frames": 220500,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "menu_confirm": {
+      "file": "audio/menu_confirm.wav",
+      "frames": 42072,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "boss_ram": {
+      "file": "audio/boss_ram.wav",
+      "frames": 220500,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "intro_warning": {
+      "file": "audio/intro_warning.wav",
+      "frames": 133200,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "intro_go": {
+      "file": "audio/intro_go.wav",
+      "frames": 114982,
+      "sample_rate": 44100,
+      "channels": 1,
+      "format": "s16le"
+    },
+    "music": {
+      "file": "audio/music.mp3",
+      "loop": true,
+      "note": "Original MP3; honor encoder delay/padding when decoding."
+    }
+  },
+  "voice_text": {
+    "intro_warning": "Enemy Boss reported to prepare invasion.",
+    "intro_go": "You must stopp him! Go!"
+  }
+}

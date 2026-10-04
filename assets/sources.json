@@ -1,0 +1,77 @@
+[
+  {
+    "id": "grafxkid",
+    "author": "GrafxKid",
+    "title": "Arcade Space Shooter Game Assets",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/arcade-space-shooter-game-assets",
+    "download": "https://opengameart.org/sites/default/files/arcade_space_shooter.png",
+    "files": [
+      "source/grafxkid/arcade_space_shooter.png"
+    ],
+    "retrieved": "2026-10-04",
+    "sha256": {
+      "source/grafxkid/arcade_space_shooter.png": "a6e0569c064508535cb5ce1eaf0257ada8bd425f88f8b9e897d628b270ef3cfa"
+    }
+  },
+  {
+    "id": "kenney",
+    "author": "Kenney",
+    "title": "Sci-fi Sounds 1.0",
+    "license": "CC0-1.0",
+    "page": "https://kenney.nl/assets/sci-fi-sounds",
+    "download": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
+    "files": [
+      "source/kenney/computerNoise_000.ogg",
+      "source/kenney/explosionCrunch_000.ogg",
+      "source/kenney/forceField_000.ogg",
+      "source/kenney/impactMetal_000.ogg",
+      "source/kenney/laserRetro_000.ogg",
+      "source/kenney/laserSmall_001.ogg",
+      "source/kenney/lowFrequency_explosion_000.ogg",
+      "source/kenney/thrusterFire_000.ogg"
+    ],
+    "retrieved": "2026-10-04",
+    "sha256": {
+      "source/kenney/computerNoise_000.ogg": "1527944e16eb14b48ee03fe3e7ce6aae94262833a4e1f83928d451a7414fe4e1",
+      "source/kenney/explosionCrunch_000.ogg": "4b597d658d0ae101f0a030fbeea5fc3a4292ab85f017470a8254a8e7959cbd69",
+      "source/kenney/forceField_000.ogg": "c2916f2a062c8ddd1aca2826d134fe90847037db31342726ffb0f9097afe339c",
+      "source/kenney/impactMetal_000.ogg": "956c6612a256aa1a67a2327fffe2454f6b1d82e4c1c2be28fd66916335d5b1d6",
+      "source/kenney/laserRetro_000.ogg": "2a203a007d24cc7e607eb8bec1d86bedba7f551911217ce2c4c1f31393aed32c",
+      "source/kenney/laserSmall_001.ogg": "ab87913aba9790a0c5fa173d086267ba521ad522fcad2252271db49988313cf5",
+      "source/kenney/lowFrequency_explosion_000.ogg": "3cb48d86dab63140cfb9aaeea4d4a6846abaca5831d157d8adbec0490da26343",
+      "source/kenney/thrusterFire_000.ogg": "0fdc474d93f209debf1fc4ea77765a669dcb7676db31b4d8a0a509685bccf374"
+    },
+    "archive_sha256": "119340f351a5098ad814f78719438c0da355a9ce8a4c8a3af6a8d48aa3d49e04"
+  },
+  {
+    "id": "hydrogene",
+    "author": "HydroGene",
+    "title": "8-bit Epic Space Shooter Music",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/8-bit-epic-space-shooter-music",
+    "download": "https://opengameart.org/sites/default/files/8bit-spaceshooter.mp3",
+    "files": [
+      "audio/music.mp3"
+    ],
+    "retrieved": "2026-10-04",
+    "sha256": {
+      "audio/music.mp3": "f8a232f6fc5a52d1ea85705447617a1d6132e63d993d63ad542c253f1b614b93"
+    }
+  },
+  {
+    "id": "font8x8",
+    "author": "Daniel Hepper / Marcel Sondaar / IBM",
+    "title": "font8x8 basic",
+    "license": "Public domain",
+    "page": "https://github.com/dhepper/font8x8",
+    "download": "https://raw.githubusercontent.com/dhepper/font8x8/master/font8x8_basic.h",
+    "files": [
+      "source/font8x8/font8x8_basic.h"
+    ],
+    "retrieved": "2026-10-04",
+    "sha256": {
+      "source/font8x8/font8x8_basic.h": "49d8df366296b203ca3211bc0672cf2a762135bf12710735b6292756b19dffd5"
+    }
+  }
+]

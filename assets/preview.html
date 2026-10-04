@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gnarlaxx asset preview</title>
+<style>
+  :root { color-scheme: dark; font: 16px/1.5 system-ui, sans-serif; background: #0b1020; color: #e5e9f2; }
+  body { margin: 32px auto; padding: 0 24px; max-width: 1160px; }
+  h1 { margin-bottom: 8px; } h2 { font-size: 20px; }
+  p { color: #a9b6ce; } a { color: #83d9ed; }
+  img { image-rendering: pixelated; max-width: 100%; height: auto; }
+  .layout { display: grid; grid-template-columns: minmax(280px, 400px) 1fr; gap: 32px; }
+  .scene { width: 400px; border: 1px solid #29344d; }
+  .audio { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  label { display: block; color: #b9c7dd; }
+  audio { width: 100%; display: block; margin-top: 5px; }
+  figure { margin: 0; } figcaption { color: #a9b6ce; font-size: 14px; }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+</style>
+<h1><img src="graphics/title.png" width="528" height="80" alt="Gnarlaxx"></h1>
+<p>Shared assets for the C, Odin, and Zig versions. The scene below is a static
+composition at 400 × 500 logical pixels. <a href="README.md">Sources and credits</a>.</p>
+<div class="layout">
+  <figure>
+    <img class="scene" src="preview.png" width="400" height="500" alt="Space shooter scene with a multipart green boss, a five-enemy formation, a drone, bullets, and the player ship">
+    <figcaption>Asset composition; game implementation has not started.</figcaption>
+  </figure>
+  <section>
+    <h2>Sprites, font, and level-clear lettering</h2>
+    <a href="contact-sheet.png"><img src="contact-sheet.png" width="960" height="460" alt="Named player poses, enemies, bullets, effects, and boss parts; click for full size"></a>
+    <p><img src="graphics/level-cleared.png" width="432" height="48" alt="Level cleared"></p>
+    <p><img src="graphics/font.png" width="256" height="128" alt="ASCII bitmap font"></p>
+    <h2>Music</h2>
+    <label>HydroGene — 8-bit Epic Space Shooter Music
+      <audio controls loop preload="none" src="audio/music.mp3"></audio>
+    </label>
+    <p>Use the players below to audition effects and the robotic mission briefing.</p>
+  </section>
+</div>
+<h2>Sound effects and voice</h2>
+<div class="audio">
+  <label>Player shot<audio controls preload="none" src="audio/player_shot.wav"></audio></label>
+  <label>Enemy shot<audio controls preload="none" src="audio/enemy_shot.wav"></audio></label>
+  <label>Hit<audio controls preload="none" src="audio/hit.wav"></audio></label>
+  <label>Explosion<audio controls preload="none" src="audio/explosion.wav"></audio></label>
+  <label>Boss explosion<audio controls preload="none" src="audio/boss_explosion.wav"></audio></label>
+  <label>Attack warning<audio controls preload="none" src="audio/warning.wav"></audio></label>
+  <label>Menu confirmation<audio controls preload="none" src="audio/menu_confirm.wav"></audio></label>
+  <label>Boss ram<audio controls preload="none" src="audio/boss_ram.wav"></audio></label>
+  <label>“Enemy Boss reported to prepare invasion”<audio controls preload="none" src="audio/intro_warning.wav"></audio></label>
+  <label>“You must stopp him! Go!”<audio controls preload="none" src="audio/intro_go.wav"></audio></label>
+</div>
+</html>
