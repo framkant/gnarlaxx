@@ -31,6 +31,15 @@ architecture for future development are outside the scope.
   and error handling in each language.
 - Implement gameplay in each language. Library bindings are fine; wrapping one
   shared C game would miss the learning goal.
+- Share a small local C audio library for decoding, mixing, and Sokol output.
+  Keep gameplay sound choices in each implementation and use the library through
+  its C interface. This extraction stays in this repository.
+- Preserve the post-audio-extraction version with fixed game arrays as the
+  annotated `c-original-reference` tag, the canonical C reference for the original
+  task. Then make C's transient game collections dynamic before starting the ports.
+  Odin and Zig will be compared against that dynamic version, including ownership,
+  growth/removal, allocation failure, reset, and cleanup. Keep fixed-size values
+  where the rules actually fix their size, such as the five high scores.
 - Resolve minor tuning details during implementation. Commit to Git reasonably
   often, using small, meaningful commits at coherent checkpoints.
 
@@ -120,8 +129,9 @@ like a large variant of the drone and roams the top of the screen.
 
 Current status (2026-10-04): M0 is complete. The first playable C version of M1
 is built and tested, including native rendering/audio, the complete mission,
-menus, pause, and score persistence. It is ready for user playtesting and tuning;
-the Odin and Zig ports have not started. See the [C build notes](implementations/c/README.md)
+menus, pause, and score persistence. User playtesting and the properties cleanup
+are complete. The next steps are local audio extraction, a tagged original C
+reference, and dynamic C state before the Odin and Zig ports. See the [C build notes](implementations/c/README.md)
 and [development journal](docs/journal/README.md). Continue adding numbered journal
 entries at meaningful checkpoints alongside regular Git commits.
 
@@ -145,15 +155,33 @@ entries at meaningful checkpoints alongside regular Git commits.
 - Iterate with the user until the scope and behavior are satisfactory. This
   version becomes the behavioral reference for the ports.
 
+### M1a: shared audio and the original C reference
+
+- Extract the audio layer as a local library with a small C interface and explicit
+  resource lifetime. Keep it independent of the C game's types and asset names.
+- Integrate it back into C and verify decoding, mixing, playback, pause, volumes,
+  and shutdown. Record the checked version with the annotated tag
+  `c-original-reference` before changing the fixed game collections.
+
+### M1b: dynamic C comparison baseline
+
+- Replace fixed-capacity transient game collections with collections that grow
+  as needed. Make ownership, removal, allocation failures, reset, and teardown
+  explicit while preserving the visible game and mission rules.
+- Verify growth beyond the old limits, lifetime behavior, and complete gameplay.
+  This version becomes the implementation baseline for M2 and M3; the tag remains
+  the historical reference for the original task.
+
 ### M2: Odin implementation
 
-- Reimplement the reference game idiomatically in Odin, using the same assets
-  and preferably the same underlying libraries.
+- Reimplement the dynamic reference game idiomatically in Odin, using the same
+  assets and shared audio library, with Odin's own gameplay and collections.
 - Verify equivalent gameplay and presentation. Take comparable rough measurements.
 
 ### M3: Zig implementation
 
-- Reimplement the reference game idiomatically in Zig under the same constraints.
+- Reimplement the dynamic reference game idiomatically in Zig under the same
+  constraints, using the shared audio library and Zig's own gameplay and collections.
 - Verify equivalent gameplay and presentation. Take comparable rough measurements.
 
 ### M4: walkthroughs and language comparison
