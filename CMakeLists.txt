@@ -22,6 +22,14 @@ target_compile_options(sokol PRIVATE -fobjc-arc)
 target_link_libraries(sokol PUBLIC "-framework Cocoa" "-framework QuartzCore"
     "-framework Metal" "-framework MetalKit" "-framework AudioToolbox")
 
+# Odin supplies main() and calls sapp_run; both languages use the same platform glue.
+add_library(sokol_odin STATIC EXCLUDE_FROM_ALL implementations/c/platform.m)
+target_include_directories(sokol_odin SYSTEM PUBLIC vendor/sokol)
+target_compile_definitions(sokol_odin PUBLIC SOKOL_METAL PRIVATE SOKOL_NO_ENTRY)
+target_compile_options(sokol_odin PRIVATE -fobjc-arc)
+target_link_libraries(sokol_odin PUBLIC "-framework Cocoa" "-framework QuartzCore"
+    "-framework Metal" "-framework MetalKit")
+
 add_library(gnarlaxx_core STATIC implementations/c/game.c implementations/c/scores.c)
 target_include_directories(gnarlaxx_core PUBLIC implementations/c)
 target_compile_options(gnarlaxx_core PRIVATE -Wall -Wextra -Wpedantic)

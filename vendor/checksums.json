@@ -10,6 +10,13 @@
   "sokol/sokol_log.h": "a8d55de21694410740e752ea8e57c4103d5951d20339ba9712e24232adef9a42",
   "sokol/sokol_time.h": "0eeb8c1bc9ac2ec4438090f68e2ab0eb85d1daf10643158dec11383a8e8b1872",
   "sokol/util/sokol_gl.h": "5d85b5ee5edcb2c00d4de304e37d1834f4eb0a7cafbf56a05ba907583558cee3",
+  "sokol_odin/LICENSE": "d5501d72378a0865c7896cc85cfbc8956189a0cdc3fd1e72350443cb1522f031",
+  "sokol_odin/app/app.odin": "69cefd4765f9c1050123b0b54da54f041d7e35e13fc29dfbb6cc244e3635dbbf",
+  "sokol_odin/gfx/gfx.odin": "bc12a2a0a8a02cd1ff040affdc05b227f3fd32a60e6a0c64ac578a8164450b25",
+  "sokol_odin/gl/gl.odin": "0907bc1bfd0fd7e0a07ec83d543c25e1f9e609f3991b345c7c4e7966c10b9224",
+  "sokol_odin/glue/glue.odin": "6a1a53b9214aa4a120a592f947dbf0873c1eeacb82b2e990dab068bff6da3dbf",
+  "sokol_odin/log/log.odin": "3b7a7ec13b1b08d2131c905aad12887f78baea1a086a1462c09ab3c31171cc29",
+  "sokol_odin/time/time.odin": "3be100516af91cd6f5d7d089303f75783521c905e5eaab1ea06b49fc9a439df5",
   "stb/LICENSE": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63",
   "stb/stb_image.h": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
 }
