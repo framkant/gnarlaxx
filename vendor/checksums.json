@@ -1,0 +1,15 @@
+{
+  "dr_libs/LICENSE": "dd1c647e6f767f8ff4b2dfae0fed314726600a01e0cf1ef556afddd5fa96ff15",
+  "dr_libs/dr_mp3.h": "997b7ee18de6e6b81e2a83f1ea9fc62aef25c62b28d48db95635f49e65de0a2f",
+  "dr_libs/dr_wav.h": "03e70c1a2d9787cd7ed3e966c075bea7bac6373f759db9cd7ca9ccdfc4ec4493",
+  "sokol/LICENSE": "72f9367756dba68918b8955092c14503934681862eee33cc16495a02f40025ef",
+  "sokol/sokol_app.h": "924ef994c5635218f7b97a0b8aebc7cdd2f9b4fdb06ea8bae615c2fe1b5964bd",
+  "sokol/sokol_audio.h": "e527091b2bc0c4ccbeb3f145489c0dbdbe74869247e30942c1e22bd580e2c4c7",
+  "sokol/sokol_gfx.h": "858bc9ceb62185cde87c2308c2695482a5cf304dc622c9c1ec0fae7188d5b9c2",
+  "sokol/sokol_glue.h": "6207d08f7ea5da43154f980c7fe314429eafb75922c6b41108ce2936f8240753",
+  "sokol/sokol_log.h": "a8d55de21694410740e752ea8e57c4103d5951d20339ba9712e24232adef9a42",
+  "sokol/sokol_time.h": "0eeb8c1bc9ac2ec4438090f68e2ab0eb85d1daf10643158dec11383a8e8b1872",
+  "sokol/util/sokol_gl.h": "5d85b5ee5edcb2c00d4de304e37d1834f4eb0a7cafbf56a05ba907583558cee3",
+  "stb/LICENSE": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63",
+  "stb/stb_image.h": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
+}

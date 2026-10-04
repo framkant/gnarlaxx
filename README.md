@@ -10,10 +10,21 @@ retro art and room to cut corners.
 
 ## Current state
 
-The [plan](plan.md) is agreed and the shared asset package is prepared. There is
-no playable game yet. Next is a minimal native C application using Sokol where
-practical, with miniaudio available if needed for audio. Odin and Zig follow the
-playable reference; code walkthroughs and the comparison come afterward.
+The [plan](plan.md) is agreed, shared assets are prepared, and the native C/Sokol
+foundation renders and plays audio. The full mission is being implemented.
+Odin and Zig follow the playable reference; code walkthroughs and the comparison
+come afterward.
+
+Build the C version on macOS with Xcode command-line tools and CMake:
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+./build/gnarlaxx
+```
+
+Dependencies are [vendored and pinned](vendor/README.md); no network access or
+asset-generation tools are required to build or run.
 
 The image below is an asset composition at the planned 400 × 500 resolution,
 not a screenshot of a running implementation.
