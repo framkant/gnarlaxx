@@ -3,8 +3,8 @@
 #include "sounds.h"
 #include "properties.h"
 #include <stdbool.h>
+#include <stddef.h>
 
-enum { MAX_ENEMIES = 48, MAX_BULLETS = 512, MAX_EXPLOSIONS = 48, MAX_EVENTS = 64 };
 typedef struct Vec2 {
     float x, y;
 } Vec2;
@@ -68,24 +68,57 @@ typedef struct GameEvent {
     float gain;
     int score;
 } GameEvent;
+typedef struct EnemyList {
+    Enemy *data;
+    size_t count, capacity;
+} EnemyList;
+typedef struct BulletList {
+    Bullet *data;
+    size_t count, capacity;
+} BulletList;
+typedef struct ExplosionList {
+    Explosion *data;
+    size_t count, capacity;
+} ExplosionList;
+typedef struct EventList {
+    GameEvent *data;
+    size_t count, capacity;
+} EventList;
+typedef struct GameAllocator {
+    // realloc semantics: failure retains old storage; new_bytes == 0 frees it.
+    // Storage must have malloc alignment. Context must outlive the Game.
+    void *(*resize)(void *context, void *memory, size_t old_bytes, size_t new_bytes);
+    void *context;
+} GameAllocator;
+// Owns its collections. Do not copy a live Game or keep element pointers across updates/adds.
 typedef struct Game {
     Scene scene, paused_scene, sound_return;
     Player player;
-    Enemy enemies[MAX_ENEMIES];
-    Bullet bullets[MAX_BULLETS];
-    Explosion explosions[MAX_EXPLOSIONS];
+    EnemyList enemies;
+    BulletList bullets;
+    ExplosionList explosions;
     Boss boss;
-    GameEvent events[MAX_EVENTS];
-    int event_count, menu_choice, volume_choice, score, waves_spawned, drones_spawned;
+    EventList events;
+    GameAllocator allocator;
+    int menu_choice, volume_choice, score, waves_spawned, drones_spawned;
     float volumes[VOLUME_COUNT], ui_time, scene_time, level_time, scroll, fade, damage_flash;
-    bool quit_requested;
+    bool quit_requested, allocation_failed;
 } Game;
 
+// No allocations until first use. Initialize only a fresh/destroyed Game.
 void game_init(Game *game);
-void game_start(Game *game);
-void game_update(Game *game, Input input, float dt);
+void game_init_with_allocator(Game *game, GameAllocator allocator); // NULL resize uses the heap.
+void game_destroy(Game *game); // Frees all owned storage; safe to repeat.
+size_t game_heap_bytes(const Game *game);
+bool game_start(Game *game); // Resets the run, retaining collection capacity and volume settings.
+// False means terminal allocation failure: stop processing this run and destroy it.
+bool game_update(Game *game, Input input, float dt);
+// Adds copy their value. Removal is marked with active=false and compacted after each update.
+bool game_add_enemy(Game *game, Enemy enemy);
+bool game_add_bullet(Game *game, Bullet bullet);
+bool game_add_explosion(Game *game, Explosion explosion);
 void game_pause(Game *game);
 Vec2 game_boss_gun(const Boss *boss, bool right);
 Vec2 game_boss_core(const Boss *boss);
-void game_spawn_boss(Game *game); // Also used by the diagnostic --scene boss.
+bool game_spawn_boss(Game *game); // Also used by the diagnostic --scene boss.
 #endif

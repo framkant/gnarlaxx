@@ -19,7 +19,7 @@ static struct {
     GnaAudio *audio;
     Scores scores;
     bool held[SAPP_MAX_KEYCODES], pressed[SAPP_MAX_KEYCODES];
-    bool save_failed, audio_available, demo, mute;
+    bool save_failed, audio_available, demo, mute, failed;
     double accumulator, work_seconds, max_work_seconds;
     uint64_t started;
     int frames, frame_limit;
@@ -102,7 +102,15 @@ static void init(void) {
     set_diagnostic_scene();
     if (app.demo && !app.diagnostic_scene)
         game_start(&app.game);
-    printf("Gnarlaxx C: Metal; audio=%s (%d Hz); decoded audio=%.2f MiB; game state=%zu bytes\n",
+    if (app.game.allocation_failed) {
+        fprintf(stderr, "Cannot allocate initial game state\n");
+        game_destroy(&app.game);
+        gna_destroy(app.audio);
+        renderer_shutdown();
+        exit(1);
+    }
+    printf("Gnarlaxx C: Metal; audio=%s (%u Hz); decoded audio=%.2f MiB; game inline state=%zu "
+           "bytes\n",
            app.audio_available ? "ready" : "unavailable", gna_device_rate(app.audio),
            gna_decoded_bytes(app.audio) / 1048576.0, sizeof(Game));
     fflush(stdout);
@@ -139,8 +147,8 @@ static Input input(void) {
 }
 
 static void process_events(void) {
-    for (int i = 0; i < app.game.event_count; i++) {
-        const GameEvent *e = &app.game.events[i];
+    for (size_t i = 0; i < app.game.events.count; i++) {
+        const GameEvent *e = &app.game.events.data[i];
         if (e->finished) {
             printf("Run finished: %s, score=%d, mission time=%.2fs\n",
                    app.game.scene == SCENE_VICTORY ? "victory" : "game over", e->score,
@@ -154,7 +162,7 @@ static void process_events(void) {
         } else
             gna_play(app.audio, e->sound, e->gain);
     }
-    app.game.event_count = 0;
+    app.game.events.count = 0;
 }
 
 static void frame(void) {
@@ -162,7 +170,12 @@ static void frame(void) {
     app.accumulator += fmin(sapp_frame_duration(), .1);
     while (app.accumulator >= GAME_STEP) {
         Scene previous = app.game.scene;
-        game_update(&app.game, input(), GAME_STEP);
+        if (!game_update(&app.game, input(), GAME_STEP)) {
+            fprintf(stderr, "Cannot grow game collections; ending this run\n");
+            app.failed = true;
+            sapp_request_quit();
+            break;
+        }
         if ((app.game.scene == SCENE_BRIEFING && previous != SCENE_BRIEFING &&
              previous != SCENE_PAUSE && previous != SCENE_SOUND) ||
             (app.game.scene == SCENE_MENU && previous != SCENE_MENU))
@@ -221,8 +234,15 @@ static void cleanup(void) {
            app.frames, elapsed, elapsed > 0 ? app.frames / elapsed : 0,
            app.frames ? app.work_seconds * 1000 / app.frames : 0, app.max_work_seconds * 1000, cpu,
            usage.ru_maxrss / 1048576.0);
+    printf("Game storage: %zu inline bytes + %zu retained heap bytes; capacities: "
+           "%zu enemies, %zu bullets, %zu explosions, %zu events\n",
+           sizeof(Game), game_heap_bytes(&app.game), app.game.enemies.capacity,
+           app.game.bullets.capacity, app.game.explosions.capacity, app.game.events.capacity);
+    game_destroy(&app.game);
     gna_destroy(app.audio);
     renderer_shutdown();
+    if (app.failed)
+        exit(1);
 }
 
 sapp_desc sokol_main(int argc, char **argv) {

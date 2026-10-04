@@ -20,3 +20,4 @@ commits alongside the journal.
 7. [Reflecting on the C architecture](0007_reflecting_on_c_architecture_20261004.md)
 8. [Shared audio and dynamic comparison scope](0008_shared_audio_and_dynamic_comparison_scope_20261004.md)
 9. [Extracting shared audio and tagging the C reference](0009_extracting_shared_audio_and_tagging_c_reference_20261004.md)
+10. [Dynamic C comparison baseline](0010_dynamic_c_comparison_baseline_20261004.md)

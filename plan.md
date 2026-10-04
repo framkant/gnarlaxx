@@ -131,7 +131,9 @@ Current status (2026-10-04): M0 is complete. The first playable C version of M1
 is built and tested, including native rendering/audio, the complete mission,
 menus, pause, and score persistence. User playtesting and the properties cleanup
 are complete. M1a audio extraction is verified and preserved as
-`c-original-reference`; dynamic C state is next before the Odin and Zig ports.
+`c-original-reference` (`9ce2512`). M1b dynamic C collections are implemented and
+verified, including growth, removal, allocation failure, replay, and cleanup.
+This is the baseline for the Odin and Zig ports, which have not started.
 See the [C build notes](implementations/c/README.md)
 and [development journal](docs/journal/README.md). Continue adding numbered journal
 entries at meaningful checkpoints alongside regular Git commits.

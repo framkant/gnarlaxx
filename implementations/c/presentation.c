@@ -83,8 +83,8 @@ static void draw_boss(const Game *g) {
     }
 }
 static void world(const Game *g) {
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        const Enemy *e = &g->enemies[i];
+    for (size_t i = 0; i < g->enemies.count; i++) {
+        const Enemy *e = &g->enemies.data[i];
         if (!e->active)
             continue;
         bool blink = e->kind == ENEMY_DRONE && e->age >= DRONE_APPROACH_TIME &&
@@ -96,9 +96,9 @@ static void world(const Game *g) {
         sprite_centered(id, e->pos, 1, blink ? 0xff7777ff : 0xffffffff);
     }
     draw_boss(g);
-    for (int i = 0; i < MAX_BULLETS; i++)
-        if (g->bullets[i].active) {
-            const Bullet *b = &g->bullets[i];
+    for (size_t i = 0; i < g->bullets.count; i++)
+        if (g->bullets.data[i].active) {
+            const Bullet *b = &g->bullets.data[i];
             Sprite id = b->enemy ? (g->boss.core_open ? SPR_ENEMY_BULLET_HOT : SPR_ENEMY_BULLET)
                                  : SPR_PLAYER_BULLET;
             sprite_centered(id, b->pos, 1, 0xffffffff);
@@ -115,9 +115,9 @@ static void world(const Game *g) {
                         p->pos.x - SPRITE_RECTS[SPR_PLAYER_FLAME_0].w * .5f,
                         p->pos.y + PLAYER_HALF_HEIGHT, 1, 0xffffffff);
     }
-    for (int i = 0; i < MAX_EXPLOSIONS; i++)
-        if (g->explosions[i].active) {
-            const Explosion *e = &g->explosions[i];
+    for (size_t i = 0; i < g->explosions.count; i++)
+        if (g->explosions.data[i].active) {
+            const Explosion *e = &g->explosions.data[i];
             int frame = (int)(e->age * EXPLOSION_FPS);
             if (frame >= EXPLOSION_FRAMES)
                 frame = EXPLOSION_FRAMES - 1;

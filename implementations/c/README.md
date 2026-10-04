@@ -1,6 +1,6 @@
 # C implementation
 
-The first playable reference targets macOS on a machine with Xcode command-line
+The dynamic C comparison baseline targets macOS on a machine with Xcode command-line
 tools and CMake. Dependencies are vendored; the build does not download anything.
 
 From the repository root:
@@ -40,6 +40,9 @@ The test executable needs no window or audio device. It exercises the actual
 simulation, mixer, and score-file code, including the complete enemy schedule,
 all boss states, protected/reachable core, life loss, replay, pause, corrupt
 scores, simultaneous effects, resampling, and music wraparound.
+The dynamic-state checks additionally exceed the original entity/event capacities,
+force storage to move on growth, fail each allocation in a stress sequence, verify
+stable removal and 100 resets, and play three complete missions with tracked ownership.
 
 The normal app needs a desktop session and permission to access native window
 services. Native diagnostics can capture the game's own Metal render target:
@@ -83,5 +86,37 @@ and language evaluation remain deferred until the implementations are complete.
 
 The annotated tag `c-original-reference` preserves the verified post-audio-extraction
 implementation with fixed game arrays. It is the canonical C reference for the
-original task. The next stage introduces dynamic game collections; that version
-will be the comparison baseline for Odin and Zig.
+original task. Current C uses dynamic game collections and is the comparison
+baseline for Odin and Zig.
+
+## Dynamic state contract
+
+`Game` owns typed, contiguous lists of enemies, bullets, explosions, and events.
+Each has a pointer, count, and capacity. Storage is allocated lazily, starts at eight
+elements, and doubles as needed. Add functions copy their arguments by value.
+Live entity pointers and indices are temporary: growth can move storage, and the
+end-of-update compaction shifts elements. No game object retains a reference into
+another collection across updates.
+
+Collisions/expiry mark entries inactive; stable compaction removes them after
+simulation finishes. Surviving entries remain in creation order. This differs
+from the original version's reuse of the first inactive pool slot; storage indices
+are not part of gameplay identity. Events remain until the host consumes them and
+sets `events.count = 0`.
+
+`game_start` resets a run while retaining allocated capacity and sound settings.
+`game_destroy` frees every owned buffer and zeroes the state. A live `Game` must
+not be shallow-copied or initialized a second time without destruction. The player,
+single boss, fixed volume channels, and fixed high-score table remain plain values.
+
+Allocation failure leaves existing buffers owned and valid for destruction, sets
+`allocation_failed`, and makes `game_update`/start/add return false. A failed step
+may be partially applied; it is terminal, with no rollback or retry contract. The
+app reports the error, skips that step's events, and shuts down with a failure
+status. `game_init_with_allocator` provides the small realloc-style hook used by
+tests to force movement, count live bytes, and inject failures. Normal play uses
+`realloc`/`free`.
+
+At shutdown, diagnostics report the inline `Game` size and retained collection
+bytes separately. This excludes allocator overhead, renderer resources, and the
+shared audio library; it is not total process memory.

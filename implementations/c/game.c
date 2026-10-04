@@ -1,6 +1,8 @@
 #include "game.h"
 #include <math.h>
 #include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 static float clamp(float x, float lo, float hi) {
     return fmaxf(lo, fminf(hi, x));
@@ -13,33 +15,97 @@ static bool near(Vec2 a, Vec2 b, float radius) {
     float x = a.x - b.x, y = a.y - b.y;
     return x * x + y * y < radius * radius;
 }
+static void *heap_resize(void *context, void *memory, size_t old_bytes, size_t new_bytes) {
+    (void)context;
+    (void)old_bytes;
+    if (!new_bytes) {
+        free(memory);
+        return NULL;
+    }
+    return realloc(memory, new_bytes);
+}
+static void *grow(Game *g, void *data, size_t *capacity, size_t item_size) {
+    const size_t initial_capacity = 8;
+    if (g->allocation_failed)
+        return NULL;
+    if (*capacity > SIZE_MAX / item_size / 2) {
+        g->allocation_failed = true;
+        return NULL;
+    }
+    size_t next = *capacity ? *capacity * 2 : initial_capacity;
+    void *memory =
+        g->allocator.resize(g->allocator.context, data, *capacity * item_size, next * item_size);
+    if (!memory) {
+        g->allocation_failed = true;
+        return NULL;
+    }
+    *capacity = next;
+    return memory;
+}
+bool game_add_enemy(Game *g, Enemy enemy) {
+    if (g->allocation_failed)
+        return false;
+    if (g->enemies.count == g->enemies.capacity) {
+        Enemy *data = grow(g, g->enemies.data, &g->enemies.capacity, sizeof *data);
+        if (!data)
+            return false;
+        g->enemies.data = data;
+    }
+    g->enemies.data[g->enemies.count++] = enemy;
+    return true;
+}
+bool game_add_bullet(Game *g, Bullet bullet) {
+    if (g->allocation_failed)
+        return false;
+    if (g->bullets.count == g->bullets.capacity) {
+        Bullet *data = grow(g, g->bullets.data, &g->bullets.capacity, sizeof *data);
+        if (!data)
+            return false;
+        g->bullets.data = data;
+    }
+    g->bullets.data[g->bullets.count++] = bullet;
+    return true;
+}
+bool game_add_explosion(Game *g, Explosion explosion) {
+    if (g->allocation_failed)
+        return false;
+    if (g->explosions.count == g->explosions.capacity) {
+        Explosion *data = grow(g, g->explosions.data, &g->explosions.capacity, sizeof *data);
+        if (!data)
+            return false;
+        g->explosions.data = data;
+    }
+    g->explosions.data[g->explosions.count++] = explosion;
+    return true;
+}
+static bool add_event(Game *g, GameEvent event) {
+    if (g->allocation_failed)
+        return false;
+    if (g->events.count == g->events.capacity) {
+        GameEvent *data = grow(g, g->events.data, &g->events.capacity, sizeof *data);
+        if (!data)
+            return false;
+        g->events.data = data;
+    }
+    g->events.data[g->events.count++] = event;
+    return true;
+}
 static void sound(Game *g, Sound s, float gain) {
-    if (g->event_count < MAX_EVENTS)
-        g->events[g->event_count++] = (GameEvent){.sound = s, .gain = gain};
+    add_event(g, (GameEvent){.sound = s, .gain = gain});
 }
 static void explode(Game *g, Vec2 pos, float scale) {
-    for (int i = 0; i < MAX_EXPLOSIONS; i++)
-        if (!g->explosions[i].active) {
-            g->explosions[i] = (Explosion){.active = true, .pos = pos, .scale = scale};
-            return;
-        }
+    game_add_explosion(g, (Explosion){.active = true, .pos = pos, .scale = scale});
 }
 static void bullet(Game *g, Vec2 pos, Vec2 velocity, bool enemy) {
-    for (int i = 0; i < MAX_BULLETS; i++)
-        if (!g->bullets[i].active) {
-            g->bullets[i] =
-                (Bullet){.active = true, .enemy = enemy, .pos = pos, .velocity = velocity};
-            return;
-        }
+    game_add_bullet(g, (Bullet){.active = true, .enemy = enemy, .pos = pos, .velocity = velocity});
 }
 static void finish(Game *g, bool won) {
     g->scene = won ? SCENE_VICTORY : SCENE_GAME_OVER;
     g->scene_time = 0;
     if (won)
         g->score += VICTORY_SCORE + g->player.lives * SURVIVING_LIFE_SCORE;
-    if (g->event_count < MAX_EVENTS)
-        g->events[g->event_count++] = (GameEvent){.finished = true, .score = g->score};
-    memset(g->bullets, 0, sizeof g->bullets);
+    add_event(g, (GameEvent){.finished = true, .score = g->score});
+    g->bullets.count = 0;
 }
 static void damage_player(Game *g) {
     if (g->player.invincible > 0 || g->scene != SCENE_PLAY)
@@ -54,26 +120,61 @@ static void damage_player(Game *g) {
     g->player.pos = (Vec2){GAME_CENTER_X, PLAYER_SPAWN_Y};
     g->player.velocity = (Vec2){0};
     g->player.invincible = PLAYER_INVINCIBILITY_TIME;
-    for (int i = 0; i < MAX_BULLETS; i++)
-        if (g->bullets[i].enemy)
-            g->bullets[i].active = false;
+    for (size_t i = 0; i < g->bullets.count; i++)
+        if (g->bullets.data[i].enemy)
+            g->bullets.data[i].active = false;
 }
 
-void game_init(Game *g) {
+void game_init_with_allocator(Game *g, GameAllocator allocator) {
+    if (!allocator.resize)
+        allocator = (GameAllocator){.resize = heap_resize};
     *g =
         (Game){.scene = SCENE_MENU,
+               .allocator = allocator,
                .volumes = {[VOLUME_MASTER] = .65f, [VOLUME_MUSIC] = .28f, [VOLUME_EFFECTS] = .65f}};
 }
-void game_start(Game *g) {
+void game_init(Game *g) {
+    game_init_with_allocator(g, (GameAllocator){0});
+}
+void game_destroy(Game *g) {
+    if (g->allocator.resize) {
+        g->allocator.resize(g->allocator.context, g->enemies.data,
+                            g->enemies.capacity * sizeof *g->enemies.data, 0);
+        g->allocator.resize(g->allocator.context, g->bullets.data,
+                            g->bullets.capacity * sizeof *g->bullets.data, 0);
+        g->allocator.resize(g->allocator.context, g->explosions.data,
+                            g->explosions.capacity * sizeof *g->explosions.data, 0);
+        g->allocator.resize(g->allocator.context, g->events.data,
+                            g->events.capacity * sizeof *g->events.data, 0);
+    }
+    *g = (Game){0};
+}
+size_t game_heap_bytes(const Game *g) {
+    return g->enemies.capacity * sizeof *g->enemies.data +
+           g->bullets.capacity * sizeof *g->bullets.data +
+           g->explosions.capacity * sizeof *g->explosions.data +
+           g->events.capacity * sizeof *g->events.data;
+}
+bool game_start(Game *g) {
+    if (g->allocation_failed)
+        return false;
     float volumes[VOLUME_COUNT];
     memcpy(volumes, g->volumes, sizeof volumes);
+    // Transfer the owned buffers into the reset state, then clear their live lengths.
     *g = (Game){.scene = SCENE_BRIEFING,
+                .allocator = g->allocator,
+                .enemies = g->enemies,
+                .bullets = g->bullets,
+                .explosions = g->explosions,
+                .events = g->events,
                 .player = {.pos = {GAME_CENTER_X, PLAYER_ENTRY_Y},
                            .lives = PLAYER_LIVES,
                            .invincible = PLAYER_INVINCIBILITY_TIME},
                 .fade = 1};
+    g->enemies.count = g->bullets.count = g->explosions.count = g->events.count = 0;
     memcpy(g->volumes, volumes, sizeof volumes);
     sound(g, SOUND_MENU_CONFIRM, .5f);
+    return !g->allocation_failed;
 }
 void game_pause(Game *g) {
     if (g->scene == SCENE_PLAY || g->scene == SCENE_BRIEFING) {
@@ -95,7 +196,9 @@ Vec2 game_boss_core(const Boss *b) {
     return (Vec2){b->pos.x + (BOSS_CORE_OFFSET_X - BOSS_HALF_WIDTH + core.w * .5f),
                   b->pos.y + (BOSS_CORE_OFFSET_Y - BOSS_HALF_HEIGHT + core.h * .5f)};
 }
-void game_spawn_boss(Game *g) {
+bool game_spawn_boss(Game *g) {
+    if (g->allocation_failed)
+        return false;
     g->boss = (Boss){.active = true,
                      .pos = {GAME_CENTER_X, -BOSS_HALF_HEIGHT - BOSS_SPAWN_GAP},
                      .left_hp = BOSS_GUN_HP,
@@ -103,6 +206,7 @@ void game_spawn_boss(Game *g) {
                      .core_hp = BOSS_CORE_HP,
                      .phase = BOSS_ENTER};
     sound(g, SOUND_WARNING, .7f);
+    return !g->allocation_failed;
 }
 
 static float formation_x(int slot, int count, float side_margin) {
@@ -115,34 +219,28 @@ static void spawn_wave(Game *g) {
     int wave = g->waves_spawned++;
     const float spawn_y = -SPRITE_RECTS[SPR_PAWN_0].h * .5f - PAWN_SPAWN_GAP;
     const float middle_slot = (PAWNS_PER_WAVE - 1) * .5f;
-    for (int slot = 0; slot < PAWNS_PER_WAVE; slot++)
-        for (int i = 0; i < MAX_ENEMIES; i++)
-            if (!g->enemies[i].active) {
-                float x = formation_x(slot, PAWNS_PER_WAVE, PAWN_SIDE_MARGIN);
-                g->enemies[i] =
-                    (Enemy){.active = true,
-                            .kind = ENEMY_PAWN,
-                            .pos = {x, spawn_y - PAWN_ROW_STAGGER * fabsf(middle_slot - slot)},
-                            .base_x = x,
-                            .wave = wave,
-                            .slot = slot,
-                            .shot_timer = PAWN_FIRST_SHOT_DELAY + slot * PAWN_SHOT_STAGGER};
-                break;
-            }
+    for (int slot = 0; slot < PAWNS_PER_WAVE; slot++) {
+        float x = formation_x(slot, PAWNS_PER_WAVE, PAWN_SIDE_MARGIN);
+        if (!game_add_enemy(
+                g, (Enemy){.active = true,
+                           .kind = ENEMY_PAWN,
+                           .pos = {x, spawn_y - PAWN_ROW_STAGGER * fabsf(middle_slot - slot)},
+                           .base_x = x,
+                           .wave = wave,
+                           .slot = slot,
+                           .shot_timer = PAWN_FIRST_SHOT_DELAY + slot * PAWN_SHOT_STAGGER}))
+            return;
+    }
 }
 static void spawn_drone(Game *g) {
     int lane = g->drones_spawned++ % DRONE_LANE_COUNT;
     float x = formation_x(lane, DRONE_LANE_COUNT, DRONE_SIDE_MARGIN);
     float y = -SPRITE_RECTS[SPR_DRONE_0].h * .5f - DRONE_SPAWN_GAP;
-    for (int i = 0; i < MAX_ENEMIES; i++)
-        if (!g->enemies[i].active) {
-            g->enemies[i] = (Enemy){.active = true, .kind = ENEMY_DRONE, .pos = {x, y}};
-            break;
-        }
+    game_add_enemy(g, (Enemy){.active = true, .kind = ENEMY_DRONE, .pos = {x, y}});
 }
 static void update_enemies(Game *g, float dt) {
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        Enemy *e = &g->enemies[i];
+    for (size_t i = 0; i < g->enemies.count; i++) {
+        Enemy *e = &g->enemies.data[i];
         if (!e->active)
             continue;
         float previous = e->age;
@@ -354,8 +452,8 @@ static bool hit_boss(Game *g, Vec2 pos) {
                    BOSS_HALF_HEIGHT - BOSS_HULL_SHOT_INSET_Y);
 }
 static void update_bullets(Game *g, float dt) {
-    for (int i = 0; i < MAX_BULLETS; i++) {
-        Bullet *b = &g->bullets[i];
+    for (size_t i = 0; i < g->bullets.count; i++) {
+        Bullet *b = &g->bullets.data[i];
         if (!b->active)
             continue;
         b->pos.x += b->velocity.x * dt;
@@ -371,8 +469,8 @@ static void update_bullets(Game *g, float dt) {
                 damage_player(g);
             }
         } else {
-            for (int j = 0; j < MAX_ENEMIES; j++) {
-                Enemy *e = &g->enemies[j];
+            for (size_t j = 0; j < g->enemies.count; j++) {
+                Enemy *e = &g->enemies.data[j];
                 if (e->active && near(b->pos, e->pos, ENEMY_HURT_RADIUS)) {
                     e->active = false;
                     b->active = false;
@@ -413,7 +511,7 @@ static void update_player(Game *g, Input in, float dt) {
     }
 }
 
-void game_update(Game *g, Input in, float dt) {
+static void update(Game *g, Input in, float dt) {
     g->ui_time += dt;
     if (in.sound && g->scene != SCENE_SOUND) {
         g->sound_return = g->scene;
@@ -483,11 +581,11 @@ void game_update(Game *g, Input in, float dt) {
     }
     g->scene_time += dt;
     if (g->scene == SCENE_VICTORY || g->scene == SCENE_GAME_OVER) {
-        for (int i = 0; i < MAX_EXPLOSIONS; i++)
-            if (g->explosions[i].active) {
-                g->explosions[i].age += dt;
-                if (g->explosions[i].age > EXPLOSION_DURATION + RESULT_EXPLOSION_HOLD)
-                    g->explosions[i].active = false;
+        for (size_t i = 0; i < g->explosions.count; i++)
+            if (g->explosions.data[i].active) {
+                g->explosions.data[i].age += dt;
+                if (g->explosions.data[i].age > EXPLOSION_DURATION + RESULT_EXPLOSION_HOLD)
+                    g->explosions.data[i].active = false;
             }
         if (g->scene_time > .5f) {
             if (in.confirm)
@@ -529,8 +627,8 @@ void game_update(Game *g, Input in, float dt) {
     if (g->scene != SCENE_PLAY)
         return;
     bool any = false;
-    for (int i = 0; i < MAX_ENEMIES; i++)
-        any |= g->enemies[i].active;
+    for (size_t i = 0; i < g->enemies.count; i++)
+        any |= g->enemies.data[i].active;
     if (g->waves_spawned == PAWN_WAVE_COUNT && g->drones_spawned == DRONE_COUNT && !any &&
         !g->boss.active)
         game_spawn_boss(g);
@@ -538,10 +636,36 @@ void game_update(Game *g, Input in, float dt) {
     if (g->scene != SCENE_PLAY)
         return;
     update_bullets(g, dt);
-    for (int i = 0; i < MAX_EXPLOSIONS; i++)
-        if (g->explosions[i].active) {
-            g->explosions[i].age += dt;
-            if (g->explosions[i].age > EXPLOSION_DURATION)
-                g->explosions[i].active = false;
+    for (size_t i = 0; i < g->explosions.count; i++)
+        if (g->explosions.data[i].active) {
+            g->explosions.data[i].age += dt;
+            if (g->explosions.data[i].age > EXPLOSION_DURATION)
+                g->explosions.data[i].active = false;
         }
+}
+
+// Stable compaction keeps surviving entities in creation order. Never compact during iteration.
+static void compact(Game *g) {
+    size_t alive = 0;
+    for (size_t i = 0; i < g->enemies.count; i++)
+        if (g->enemies.data[i].active)
+            g->enemies.data[alive++] = g->enemies.data[i];
+    g->enemies.count = alive;
+    alive = 0;
+    for (size_t i = 0; i < g->bullets.count; i++)
+        if (g->bullets.data[i].active)
+            g->bullets.data[alive++] = g->bullets.data[i];
+    g->bullets.count = alive;
+    alive = 0;
+    for (size_t i = 0; i < g->explosions.count; i++)
+        if (g->explosions.data[i].active)
+            g->explosions.data[alive++] = g->explosions.data[i];
+    g->explosions.count = alive;
+}
+bool game_update(Game *g, Input input, float dt) {
+    if (g->allocation_failed)
+        return false;
+    update(g, input, dt);
+    compact(g);
+    return !g->allocation_failed;
 }

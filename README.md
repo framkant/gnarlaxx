@@ -15,8 +15,9 @@ and audio. It includes the full mission, boss phases, menus, pause, volume
 controls, and saved high scores. Audio decoding/mixing/output is now a small
 [local C library](libs/audio/README.md) that all three implementations will use.
 The tag `c-original-reference` preserves the verified C implementation of the
-original task, including its fixed game arrays. Next comes dynamic C state as
-the comparison baseline for Odin and Zig; walkthroughs follow the ports.
+original task, including its fixed game arrays. Current C uses dynamic collections
+with explicit ownership, allocation failure, replay, and cleanup, and is the
+comparison baseline for Odin and Zig. Walkthroughs follow the ports.
 
 Build the C version on macOS with Xcode command-line tools and CMake:
 
