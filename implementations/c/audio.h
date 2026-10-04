@@ -5,14 +5,31 @@
 #include <stdint.h>
 
 typedef enum Sound {
-    SOUND_PLAYER_SHOT, SOUND_ENEMY_SHOT, SOUND_HIT, SOUND_EXPLOSION,
-    SOUND_BOSS_EXPLOSION, SOUND_WARNING, SOUND_MENU_CONFIRM, SOUND_BOSS_RAM,
-    SOUND_INTRO_WARNING, SOUND_INTRO_GO, SOUND_COUNT
+    SOUND_PLAYER_SHOT,
+    SOUND_ENEMY_SHOT,
+    SOUND_HIT,
+    SOUND_EXPLOSION,
+    SOUND_BOSS_EXPLOSION,
+    SOUND_WARNING,
+    SOUND_MENU_CONFIRM,
+    SOUND_BOSS_RAM,
+    SOUND_INTRO_WARNING,
+    SOUND_INTRO_GO,
+    SOUND_COUNT
 } Sound;
 
 enum { AUDIO_VOICES = 24 };
-typedef struct Sample { float *data; uint64_t frames; unsigned channels, rate; } Sample;
-typedef struct Voice { Sound sound; double cursor; float gain; bool active; } Voice;
+typedef struct Sample {
+    float *data;
+    uint64_t frames;
+    unsigned channels, rate;
+} Sample;
+typedef struct Voice {
+    Sound sound;
+    double cursor;
+    float gain;
+    bool active;
+} Voice;
 typedef struct Audio {
     Sample sounds[SOUND_COUNT], music;
     Voice voices[AUDIO_VOICES];

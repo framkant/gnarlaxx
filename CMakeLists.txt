@@ -21,13 +21,21 @@ target_compile_options(sokol PRIVATE -fobjc-arc)
 target_link_libraries(sokol PUBLIC "-framework Cocoa" "-framework QuartzCore"
     "-framework Metal" "-framework MetalKit" "-framework AudioToolbox")
 
-add_library(gnarlaxx_core STATIC implementations/c/audio.c)
+add_library(gnarlaxx_core STATIC implementations/c/audio.c implementations/c/game.c implementations/c/scores.c)
 target_include_directories(gnarlaxx_core PUBLIC implementations/c)
 target_link_libraries(gnarlaxx_core PUBLIC decoders)
 target_compile_options(gnarlaxx_core PRIVATE -Wall -Wextra -Wpedantic)
 
-add_executable(gnarlaxx implementations/c/main.c implementations/c/renderer.c)
+add_executable(gnarlaxx implementations/c/main.c implementations/c/renderer.c implementations/c/presentation.c)
 target_link_libraries(gnarlaxx PRIVATE gnarlaxx_core sokol)
 target_compile_options(gnarlaxx PRIVATE -Wall -Wextra -Wpedantic)
 target_compile_definitions(gnarlaxx PRIVATE GNARLAXX_ASSET_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/assets")
 include(CTest)
+if(BUILD_TESTING)
+    add_executable(gnarlaxx_tests tests/test_game.c)
+    target_link_libraries(gnarlaxx_tests PRIVATE gnarlaxx_core)
+    target_compile_options(gnarlaxx_tests PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_definitions(gnarlaxx_tests PRIVATE TEST_ASSET_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/assets"
+        TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
+    add_test(NAME c_core COMMAND gnarlaxx_tests)
+endif()

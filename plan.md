@@ -118,11 +118,12 @@ like a large variant of the drone and roams the top of the screen.
 
 ## Milestones
 
-Current status (2026-10-04): the shared asset package is prepared and validated;
-see [asset documentation](assets/README.md) and the
-[development journal](docs/journal/README.md). M0's library and runtime
-integration work is still pending. Add numbered journal entries at meaningful
-checkpoints, alongside regular Git commits.
+Current status (2026-10-04): M0 is complete. The first playable C version of M1
+is built and tested, including native rendering/audio, the complete mission,
+menus, pause, and score persistence. It is ready for user playtesting and tuning;
+the Odin and Zig ports have not started. See the [C build notes](implementations/c/README.md)
+and [development journal](docs/journal/README.md). Continue adding numbered journal
+entries at meaningful checkpoints alongside regular Git commits.
 
 ### M0: establish the smallest workable foundation
 
