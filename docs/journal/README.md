@@ -17,3 +17,4 @@ commits alongside the journal.
 4. [Native C foundation](0004_native_c_foundation_20261004.md)
 5. [First playable C reference](0005_first_playable_c_reference_20261004.md)
 6. [Expressing geometry through properties](0006_expressing_geometry_through_properties_20261004.md)
+7. [Reflecting on the C architecture](0007_reflecting_on_c_architecture_20261004.md)
