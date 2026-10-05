@@ -1,5 +1,9 @@
 # C, Odin and Zig: what this game showed
 
+The [HTML presentation](comparison.html) covers the findings in eight slides,
+with diagrams, keyboard navigation and a print layout. Open the file directly
+in a browser; its styles, script and gameplay image are embedded.
+
 All three implementations are playable and user-tested. This comparison uses
 the **dynamic C baseline**, not the fixed-array `c-original-reference` tag.
 The judgment is about these implementations of this small game, not a general

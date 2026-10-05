@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="One small game in C, Odin and Zig. Eight slides on gameplay, memory, failure handling and the tradeoffs observed in Gnarlaxx.">
+  <title>One game. Three languages. — Gnarlaxx</title>
+  <style>
+    :root {
+      --paper: #f4f1e9; --ink: #202522; --muted: #62665e; --line: #d1d2c7;
+      --panel: #eae8de; --dark: #192322; --c: #b9d9f6; --odin: #b8dfb8; --zig: #f5ce8b;
+      --accent: #2d624e; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; cursor: pointer; }
+    button:disabled { cursor: default; opacity: .35; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 5px; }
+    a { color: inherit; text-underline-offset: 4px; }
+    .topbar, .bottom-inner { max-width: 1344px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    header { border-bottom: 1px solid var(--line); padding: 19px 40px; }
+    .brand { display: flex; align-items: center; gap: 13px; font-weight: 760; font-size: 17px; letter-spacing: -.5px; }
+    .brand svg { width: 24px; height: 24px; }
+    .brand small { border-left: 1px solid var(--line); padding-left: 13px; font: 11px var(--mono); letter-spacing: 1px; color: var(--muted); }
+    .tools { display: none; gap: 8px; }
+    .js .tools { display: flex; }
+    .tool { border: 1px solid var(--line); border-radius: 6px; background: transparent; padding: 7px 11px; font-size: 12px; }
+    main { max-width: 1240px; margin: auto; padding: 38px 40px; }
+    .slide { margin-bottom: 80px; }
+    .js main { min-height: calc(100dvh - 153px); display: grid; align-items: center; }
+    .js .slide { margin-bottom: 0; }
+    .slide[hidden] { display: none; }
+    .eyebrow { margin: 0 0 20px; color: var(--muted); font: 11px var(--mono); letter-spacing: 1.8px; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(52px, 6.5vw, 90px); letter-spacing: -4.5px; line-height: 1.02; margin-bottom: 25px; font-weight: 720; }
+    h2 { font-size: clamp(35px, 4.1vw, 55px); letter-spacing: -2.3px; line-height: 1.08; margin-bottom: 18px; font-weight: 700; }
+    h3 { font-size: 23px; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 14px; }
+    .lead { max-width: 700px; color: var(--muted); font-size: 20px; line-height: 1.5; margin-bottom: 28px; }
+    .note { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 22px 0 0; }
+    .split { display: grid; grid-template-columns: 1.15fr 1fr; gap: 50px; align-items: center; }
+    .cover { grid-template-columns: 1.3fr .8fr; gap: 75px; }
+    .cover .lead { max-width: 520px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 9px; }
+    .chip { display: inline-block; border-radius: 5px; padding: 7px 15px; font: 600 14px var(--mono); color: var(--ink); }
+    .c { background: var(--c); } .odin { background: var(--odin); } .zig { background: var(--zig); }
+    .cover-caption { font: 11px var(--mono); letter-spacing: .3px; margin-top: 24px; color: var(--muted); }
+    figure { margin: 0; }
+    .game-frame { background: var(--dark); padding: 19px; border-radius: 12px; width: 100%; max-width: 338px; justify-self: center; transform: rotate(2deg); box-shadow: 12px 14px 0 #deded2; }
+    .game-frame img { display: block; width: 100%; height: auto; image-rendering: pixelated; border-radius: 3px; }
+    .game-frame figcaption { color: #d7ded7; display: flex; justify-content: space-between; font: 10px var(--mono); padding-top: 16px; gap: 10px; }
+    .game-frame figcaption span:first-child::before { content: ""; display: inline-block; height: 6px; width: 6px; border-radius: 50%; background: var(--odin); margin-right: 7px; }
+    .callout { margin-top: 25px; padding: 15px 20px; border-left: 3px solid var(--accent); background: var(--panel); font-size: 16px; line-height: 1.5; }
+    .flow { border: 1px solid var(--line); padding: 24px 28px; border-radius: 10px; }
+    .flow-top { display: grid; grid-template-columns: 1fr 260px 1fr; align-items: center; }
+    .flow-input { display: flex; align-items: center; gap: 18px; margin-right: 20px; justify-self: end; }
+    .flow-node { text-align: center; padding: 13px 24px; border: 1px solid var(--line); border-radius: 7px; font-size: 18px; background: var(--paper); }
+    .flow-node strong { display: block; }
+    .flow-node small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+    .flow-node.core { background: var(--dark); color: var(--paper); border-color: var(--dark); min-width: 260px; }
+    .flow-node.core small { color: #c8d3ca; }
+    .arrow { font-size: 24px; color: var(--muted); }
+    .branches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; position: relative; padding-top: 30px; margin-top: 19px; }
+    .branches::before { content: ""; position: absolute; height: 1px; background: #a1a89b; left: 16.66%; right: 16.66%; top: 0; }
+    .branches::after { content: ""; position: absolute; width: 1px; height: 20px; background: #a1a89b; top: -19px; left: 50%; }
+    .branch { position: relative; text-align: center; }
+    .branch::before { content: "↓"; position: absolute; top: -34px; left: calc(50% - 7px); color: var(--muted); font-size: 25px; }
+    .branch .label { font: 11px var(--mono); color: var(--muted); margin: 0 0 10px; }
+    .branch .flow-node { font-size: 17px; }
+    .branch .flow-node small { font-size: 13px; }
+    .language-head { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
+    .language-head h2 { margin: 0; }
+    .language-head .chip { font-size: 20px; padding: 13px 17px; }
+    .language-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-top: 26px; align-items: start; }
+    .tradeoffs { display: grid; gap: 22px; }
+    .tradeoff h3 { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: 1.3px; color: var(--accent); margin-bottom: 10px; }
+    .tradeoff.cost h3 { color: #835023; }
+    .tradeoff ul { padding-left: 20px; margin: 0; }
+    .tradeoff li { font-size: 18px; line-height: 1.48; margin: 6px 0; padding-left: 3px; }
+    .code-panel { background: var(--dark); color: #e9eee7; border-radius: 10px; padding: 24px; }
+    .code-label { font: 11px var(--mono); text-transform: uppercase; letter-spacing: 1.2px; color: #b8c7b9; margin-bottom: 20px; }
+    pre { font: 14px/1.75 var(--mono); margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .code-panel .comment { color: #a7b6aa; }
+    .code-panel .highlight { color: #c0e6a4; }
+    .code-panel .code-note { border-top: 1px solid #485449; padding-top: 17px; margin: 22px 0 0; font-size: 14px; line-height: 1.5; color: #c7d1c8; }
+    .failure { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; font: 12px var(--mono); color: #d9e3da; }
+    .failure span:not(.arrow) { border: 1px solid #536454; padding: 6px 8px; border-radius: 4px; }
+    .failure .arrow { color: #b3c4b4; font-size: 18px; }
+    .architecture { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 26px; }
+    .architecture > div { padding: 25px 28px; }
+    .architecture > div + div { border-left: 1px solid var(--line); background: var(--panel); }
+    .architecture p { color: var(--muted); font-size: 17px; line-height: 1.5; margin-bottom: 0; }
+    .enemy-diagram { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
+    .enemy { width: 46px; height: 42px; background: var(--dark); color: var(--odin); padding: 10px; border-radius: 5px; }
+    .many { width: 82px; height: 42px; border: 1px dashed #747d6d; display: flex; align-items: center; justify-content: center; font: 16px var(--mono); border-radius: 5px; }
+    .keep { font-size: 13px; font-family: var(--mono); padding: 11px 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
+    .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin: 26px 0; }
+    .stat { border-top: 2px solid var(--ink); padding-top: 15px; }
+    .stat strong { display: block; font-size: 36px; letter-spacing: -1px; margin-bottom: 8px; }
+    .stat span { color: var(--muted); font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 17px; }
+    th, td { padding: 13px 14px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    th:first-child, td:first-child { text-align: left; padding-left: 0; }
+    thead th { font: 600 12px var(--mono); }
+    .verdict-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 28px 0; }
+    .verdict { padding: 24px; border: 1px solid var(--line); border-radius: 10px; }
+    .verdict .chip { margin-bottom: 23px; }
+    .verdict p { color: var(--muted); font-size: 17px; line-height: 1.45; margin: 0; }
+    .verdict.featured { border: 2px solid var(--accent); padding: 23px; background: #e8eee1; }
+    .verdict.featured h3 { color: #28533e; }
+    .takeaway { font-size: 25px; letter-spacing: -.6px; line-height: 1.4; max-width: 900px; margin: 26px 0 0; }
+    .source-links { font-size: 13px; color: var(--muted); line-height: 1.8; margin: 22px 0 0; }
+    .source-links a + a { margin-left: 18px; }
+    footer { display: none; }
+    .js footer { display: block; position: sticky; bottom: 0; border-top: 1px solid var(--line); background: var(--paper); padding: 15px 40px; z-index: 2; }
+    .counter { font: 12px var(--mono); min-width: 75px; color: var(--muted); }
+    .dots { display: flex; gap: 8px; align-items: center; }
+    .dot { border: 0; width: 28px; height: 28px; border-radius: 50%; background: transparent; position: relative; }
+    .dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #a6ac9d; position: absolute; inset: 11px; }
+    .dot[aria-current="step"] { background: var(--dark); }
+    .dot[aria-current="step"]::before { background: var(--paper); }
+    .navigation { display: flex; align-items: center; gap: 9px; }
+    .hint { font-size: 11px; color: var(--muted); margin-right: 14px; }
+    .nav-button { border: 1px solid #adb5a6; border-radius: 6px; background: transparent; font-size: 15px; min-width: 43px; height: 39px; }
+    .nav-button.next { padding: 0 16px; background: var(--dark); color: var(--paper); border-color: var(--dark); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    noscript p { margin: 24px 40px; color: var(--muted); }
+    @media screen and (min-width: 901px) and (max-height: 800px) {
+      header { padding-top: 13px; padding-bottom: 13px; }
+      main { padding-top: 20px; padding-bottom: 20px; }
+      .js main { min-height: calc(100dvh - 135px); }
+      .js footer { padding-top: 12px; padding-bottom: 12px; }
+      .eyebrow { margin-bottom: 14px; }
+      h1 { font-size: 74px; }
+      h2 { font-size: 42px; margin-bottom: 14px; }
+      .lead { font-size: 17px; line-height: 1.4; margin-bottom: 18px; }
+      .flow { padding: 17px 23px; }
+      .flow-node { padding-top: 10px; padding-bottom: 10px; }
+      .callout { margin-top: 16px; margin-bottom: 0; padding: 12px 17px; font-size: 14px; }
+      .note { font-size: 13px; margin-top: 15px; }
+      .language-columns { margin-top: 20px; gap: 26px; }
+      .tradeoffs { gap: 15px; }
+      .tradeoff li { font-size: 16px; line-height: 1.4; }
+      .code-panel { padding: 20px; }
+      pre { font-size: 13px; line-height: 1.6; }
+      .code-label { margin-bottom: 16px; }
+      .code-panel .code-note { margin-top: 17px; padding-top: 14px; }
+      .architecture { margin-top: 20px; }
+      .architecture > div { padding: 22px; }
+      .verdict-grid { margin: 20px 0; }
+      .verdict { padding: 20px; }
+      .verdict.featured { padding: 19px; }
+      .verdict .chip { margin-bottom: 17px; }
+      .takeaway { font-size: 22px; margin-top: 20px; }
+      .source-links { margin-top: 16px; }
+      .game-frame { max-width: 300px; }
+    }
+    @media (max-width: 900px) {
+      header { padding: 16px 25px; }
+      main { padding: 28px 25px; }
+      .js footer { padding: 13px 25px; }
+      .split { gap: 30px; }
+      .cover { grid-template-columns: 1.2fr .8fr; }
+      h1 { letter-spacing: -2.8px; }
+      .lead { font-size: 18px; }
+      .language-columns { gap: 24px; }
+      .tradeoff li { font-size: 16px; }
+      .code-panel { padding: 20px; }
+      pre { font-size: 12px; }
+      .hint { display: none; }
+      .verdict { padding: 20px; }
+      .verdict.featured { padding: 19px; }
+      .verdict h3 { font-size: 20px; }
+      .verdict p { font-size: 15px; }
+    }
+    @media (max-width: 650px) {
+      header { padding: 15px 18px; }
+      .brand small { display: none; }
+      .tool { padding: 7px 9px; }
+      main { padding: 30px 20px; }
+      .js main { min-height: calc(100dvh - 132px); }
+      h1 { font-size: 53px; letter-spacing: -2.7px; }
+      h2 { font-size: 35px; letter-spacing: -1.3px; }
+      .eyebrow { font-size: 10px; margin-bottom: 17px; }
+      .split, .language-columns, .architecture, .verdict-grid { grid-template-columns: 1fr; }
+      .cover { gap: 30px; }
+      .game-frame { max-width: 225px; padding: 13px; transform: none; box-shadow: 7px 7px 0 #deded2; }
+      .game-frame figcaption { font-size: 8px; padding-top: 11px; }
+      .cover-caption { line-height: 1.7; }
+      .lead { font-size: 17px; margin-bottom: 23px; }
+      .language-head { gap: 12px; }
+      .language-head .chip { font-size: 16px; padding: 11px; }
+      .language-columns { margin-top: 23px; gap: 25px; }
+      .tradeoff li { font-size: 17px; }
+      .flow { padding: 20px 16px; }
+      .flow-top { display: flex; gap: 10px; flex-direction: column; }
+      .flow-input { flex-direction: column; gap: 10px; margin-right: 0; }
+      .flow-input > .arrow { transform: rotate(90deg); }
+      .flow-node.core { min-width: 0; width: 100%; }
+      .branches { grid-template-columns: 1fr; gap: 20px; padding: 20px 0 0 18px; margin: 0 0 0 8px; border-left: 1px solid #a1a89b; }
+      .branches::before, .branches::after { display: none; }
+      .branch::before { content: "→"; left: -24px; top: calc(50% - 9px); font-size: 20px; }
+      .branch .label { padding-top: 6px; }
+      .architecture > div { padding: 22px; }
+      .architecture > div + div { border-left: 0; border-top: 1px solid var(--line); }
+      .architecture h3 { font-size: 21px; }
+      .stat-strip { gap: 13px; }
+      .stat strong { font-size: 29px; }
+      .stat span { font-size: 12px; }
+      table { font-size: 13px; }
+      th, td { padding: 12px 5px; }
+      .verdict-grid { gap: 12px; margin: 22px 0; }
+      .verdict .chip { margin-bottom: 12px; }
+      .verdict h3 { font-size: 23px; margin-bottom: 9px; }
+      .verdict p { font-size: 16px; }
+      .takeaway { font-size: 21px; }
+      .js footer { padding: 12px 18px; }
+      .bottom-inner { gap: 8px; }
+      .dots { gap: 0; }
+      .dot { width: 20px; height: 28px; border-radius: 4px; }
+      .dot::before { inset: 11px 7px; }
+      .counter { min-width: 46px; font-size: 10px; }
+      .navigation { gap: 5px; }
+      .nav-button { min-width: 34px; height: 35px; }
+      .nav-button.next { padding: 0 10px; }
+    }
+    @media (max-width: 360px) {
+      .dots { display: none; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .js .slide:not([hidden]) { animation: appear .2s ease-out; }
+      @keyframes appear { from { opacity: .3; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+    }
+    @media print {
+      @page { size: A4 landscape; margin: 13mm; }
+      body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      header, .js footer, noscript { display: none !important; }
+      main, .js main { display: block; padding: 0; margin: 0; max-width: none; min-height: 0; }
+      .slide, .slide[hidden], .js .slide { display: block !important; margin: 0; break-after: page; page-break-after: always; animation: none; }
+      .slide:last-child { break-after: auto; page-break-after: auto; }
+      .eyebrow { font-size: 9px; margin-bottom: 15px; }
+      h1 { font-size: 66px; } h2 { font-size: 40px; }
+      .lead { font-size: 17px; margin-bottom: 20px; }
+      .tradeoff li { font-size: 16px; }
+      .note, .source-links { font-size: 11px; }
+      .callout { font-size: 14px; margin-top: 20px; }
+      .game-frame { max-width: 275px; transform: none; box-shadow: none; }
+      .cover { gap: 50px; }
+      .code-panel { padding: 20px; }
+      pre { font-size: 12px; }
+      a { text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 1h4v5h3v5h4v9h-6v-3H9v3H3v-9h4V6h3z"/><path fill="#b8dfb8" d="M10 8h4v6h-4z"/></svg>
+        GNARLAXX <small>A STUDY IN THREE LANGUAGES</small>
+      </div>
+      <div class="tools"><button class="tool" id="print" type="button">Print / PDF</button><button class="tool" id="fullscreen" type="button">Full screen</button></div>
+    </div>
+  </header>
+  <noscript><p>Reading view: all eight slides are shown below. Enable JavaScript for slide navigation.</p></noscript>
+  <main id="deck" aria-label="Language comparison presentation">
+    <section class="slide" id="experiment" aria-labelledby="title-experiment" data-title="The experiment">
+      <div class="split cover">
+        <div>
+          <p class="eyebrow">01 / The experiment</p>
+          <h1 id="title-experiment">One game.<br>Three languages.</h1>
+          <p class="lead">A small shoot ’em up, built three times.<br>What changed in the code when the game stayed the same?</p>
+          <div class="chips"><span class="chip c">C</span><span class="chip odin">Odin</span><span class="chip zig">Zig</span></div>
+          <p class="cover-caption">ONE LEVEL · SOKOL · SHARED ASSETS &amp; C AUDIO</p>
+          <p class="note">All three are playable and user-tested.<br>We compare against the <strong>dynamic</strong> C implementation.</p>
+        </div>
+        <figure class="game-frame">
+          <img src="data:image/png;base64,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" width="400" height="500" alt="Gnarlaxx gameplay: the player ship fires at a formation of enemies against a scrolling starfield.">
+          <figcaption><span>ACTUAL GAMEPLAY</span><span>C REFERENCE</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide" id="systems" aria-labelledby="title-systems" data-title="How the systems connect">
+      <p class="eyebrow">02 / The shared architecture</p>
+      <h2 id="title-systems">Gameplay decides.<br>The host connects.</h2>
+      <p class="lead">Each version uses the same separation between game rules and external systems.</p>
+      <div class="flow" aria-label="Input advances gameplay. Presentation reads game state; the host dispatches sound and finished-run events.">
+        <div class="flow-top"><div class="flow-input"><div class="flow-node">Input<small>Movement, fire, menus</small></div><span class="arrow" aria-hidden="true">→</span></div><div class="flow-node core"><strong>Gameplay</strong><small>120 Hz · movement · collisions · scoring</small></div></div>
+        <div class="branches">
+          <div class="branch"><p class="label">READ CURRENT STATE</p><div class="flow-node"><strong>Presentation</strong><small>Drawing commands → Sokol graphics</small></div></div>
+          <div class="branch"><p class="label">SOUND EVENT → HOST</p><div class="flow-node"><strong>Shared C audio</strong><small>Decode → mix → Sokol output</small></div></div>
+          <div class="branch"><p class="label">FINISHED EVENT → HOST</p><div class="flow-node"><strong>High scores</strong><small>Update table → save to disk</small></div></div>
+        </div>
+      </div>
+      <p class="callout">A hit changes game state and emits a sound event. The simulation does not call graphics or audio APIs.</p>
+    </section>
+
+    <section class="slide" id="c" aria-labelledby="title-c" data-title="C: direct, but manual">
+      <p class="eyebrow">03 / C</p>
+      <div class="language-head"><span class="chip c">C</span><h2 id="title-c">Direct, but manual.</h2></div>
+      <p class="lead">Plain data and visible control flow. Dynamic storage adds chores.</p>
+      <div class="language-columns">
+        <div class="tradeoffs">
+          <div class="tradeoff"><h3>What worked well</h3><ul><li>Structs and functions are easy to trace.</li><li>Sokol and shared audio use C interfaces directly.</li><li>Layout and allocation behavior are visible.</li></ul></div>
+          <div class="tradeoff cost"><h3>What cost us</h3><ul><li>Typed lists repeat growth and removal code.</li><li>Error handling and event validity depend on conventions.</li></ul></div>
+        </div>
+        <div class="code-panel">
+          <p class="code-label">Collection shape · from game.h</p>
+          <pre><code>typedef struct EnemyList {
+    Enemy *data;
+    size_t count, capacity;
+} EnemyList;</code></pre>
+          <p class="code-note">Our helpers must grow, append, compact and free this storage.</p>
+          <div class="failure" aria-label="Failed growth sets a flag, which the host checks."><span>grow fails</span><span class="arrow" aria-hidden="true">→</span><span>failure flag</span><span class="arrow" aria-hidden="true">→</span><span>host checks</span></div>
+        </div>
+      </div>
+      <p class="note">This repetition is a design choice. C could use collection macros or a library, and a manually tagged event union.</p>
+    </section>
+
+    <section class="slide" id="odin" aria-labelledby="title-odin" data-title="Odin: less machinery">
+      <p class="eyebrow">04 / Odin</p>
+      <div class="language-head"><span class="chip odin">Odin</span><h2 id="title-odin">Less machinery.</h2></div>
+      <p class="lead">The gameplay stays direct while common data handling gets shorter.</p>
+      <div class="language-columns">
+        <div class="tradeoffs">
+          <div class="tradeoff"><h3>What worked well</h3><ul><li>Built-in dynamic arrays and generic helpers replace repeated C code.</li><li>Vector arithmetic keeps movement readable.</li><li>Tagged events and enum-indexed arrays express intent.</li></ul></div>
+          <div class="tradeoff cost"><h3>What cost us</h3><ul><li>Allocator context is less visible at call sites.</li><li>Temporary lifetimes and optional allocation errors need care.</li></ul></div>
+        </div>
+        <div class="code-panel">
+          <p class="code-label">Collection shape · from types.odin</p>
+          <pre><code>enemies: <span class="highlight">[dynamic]Enemy</span>,
+bullets: [dynamic]Bullet,
+events:  [dynamic]Event,
+
+<span class="comment">// Each array carries its allocator.</span></code></pre>
+          <p class="code-note">A generic <code>push</code> handles append errors; one generic compaction helper serves all entity lists.</p>
+          <div class="failure" aria-label="Append returns an error; our push helper records it; the host checks."><span>append error</span><span class="arrow" aria-hidden="true">→</span><span>record error</span><span class="arrow" aria-hidden="true">→</span><span>host checks</span></div>
+        </div>
+      </div>
+      <p class="note">Our C audio binding is handwritten. Native callbacks restore Odin’s context, and temporary formatting storage is reset after use.</p>
+    </section>
+
+    <section class="slide" id="zig" aria-labelledby="title-zig" data-title="Zig: make failure visible">
+      <p class="eyebrow">05 / Zig</p>
+      <div class="language-head"><span class="chip zig">Zig</span><h2 id="title-zig">Make failure visible.</h2></div>
+      <p class="lead">Allocation and errors are part of the interface, all the way up.</p>
+      <div class="language-columns">
+        <div class="tradeoffs">
+          <div class="tradeoff"><h3>What worked well</h3><ul><li>Explicit allocators, <code>try</code>, <code>defer</code> and <code>errdefer</code> clarify failure and cleanup.</li><li>Built-in allocation-failure testing helps verify ownership.</li><li>The build translates our actual C audio header.</li></ul></div>
+          <div class="tradeoff cost"><h3>What cost us</h3><ul><li>Casts and error/allocator plumbing add visual noise.</li><li>Build and library calls needed version-specific adaptation.</li></ul></div>
+        </div>
+        <div class="code-panel">
+          <p class="code-label">Appending an event · from game.zig</p>
+          <pre><code><span class="highlight">try</span> g.events.append(g.allocator, .{
+    .sound = .{ .id = id, .gain = gain },
+});
+
+<span class="comment">// Allocation and failure are visible here.</span></code></pre>
+          <p class="code-note">Errors propagate through gameplay helpers. The application catches the error and shuts down cleanly.</p>
+          <div class="failure" aria-label="An append error propagates with try, then the host catches it."><span>append error</span><span class="arrow" aria-hidden="true">→</span><span>try propagates</span><span class="arrow" aria-hidden="true">→</span><span>host catches</span></div>
+        </div>
+      </div>
+      <p class="note">Explicit error handling does not enforce unique ownership or make pointers survive collection growth.</p>
+    </section>
+
+    <section class="slide" id="architecture" aria-labelledby="title-architecture" data-title="What about 30 enemy types?">
+      <p class="eyebrow">06 / The architectural limit</p>
+      <h2 id="title-architecture">What about 30 enemy types?</h2>
+      <p class="lead">Your earlier criticism still applies to every version.</p>
+      <div class="architecture">
+        <div>
+          <h3>The language helps with expression.</h3>
+          <div class="chips"><span class="chip c">C</span><span class="chip odin">Odin</span><span class="chip zig">Zig</span></div>
+          <p style="margin-top: 20px">Collections, math, events and errors become more or less convenient.</p>
+          <p class="keep" style="margin-top: 20px; color: var(--ink)">Same state machines + enemy-kind switches</p>
+        </div>
+        <div>
+          <h3>More content needs a design decision.</h3>
+          <div class="enemy-diagram" aria-label="Three enemy types growing to thirty">
+            <svg class="enemy" viewBox="0 0 16 14" aria-hidden="true"><path fill="currentColor" d="M3 0h2v2h6V0h2v4h2v6h-2v2h-2V9H5v3H3v-2H1V4h2zm2 4v2h2V4zm4 0v2h2V4z"/></svg>
+            <svg class="enemy" viewBox="0 0 16 14" aria-hidden="true"><path fill="currentColor" d="M6 0h4v2h3v3h3v6h-4v3H4v-3H0V5h3V2h3z"/><path fill="#192322" d="M4 5h3v3H4zm5 0h3v3H9z"/></svg>
+            <svg class="enemy" viewBox="0 0 16 14" aria-hidden="true"><path fill="currentColor" d="M4 0h8v2h2v3h2v7h-3V9H3v3H0V5h2V2h2z"/><path fill="#192322" d="M4 4h2v2H4zm6 0h2v2h-2z"/></svg>
+            <span class="arrow" aria-hidden="true">→</span><span class="many">× 30</span>
+          </div>
+          <p>We would need to decide how enemy data, behavior and graphics are described and combined.</p>
+        </div>
+      </div>
+      <p class="callout"><strong>All three still need lifetime discipline.</strong> Don’t copy a live owning <code>Game</code> or retain element pointers across growth. Replay reuses storage; allocation failure ends the run.</p>
+      <p class="note">This experiment exercises growable lists, not complex object graphs or concurrent ownership.</p>
+    </section>
+
+    <section class="slide" id="measurements" aria-labelledby="title-measurements" data-title="Results and measurement limits">
+      <p class="eyebrow">07 / What we observed</p>
+      <h2 id="title-measurements">Same result. No speed verdict.</h2>
+      <div class="stat-strip"><div class="stat"><strong>9,600</strong><span>Points in each diagnostic mission</span></div><div class="stat"><strong>52.75 s</strong><span>Mission time in each version</span></div><div class="stat"><strong>≈ 60 FPS</strong><span>Across the recorded native runs</span></div></div>
+      <table>
+        <caption class="sr-only">Rough measurements from separate native runs on Apple M3 Max and macOS</caption>
+        <thead><tr><th scope="col">Recorded observation</th><th scope="col">C</th><th scope="col">Odin</th><th scope="col">Zig</th></tr></thead>
+        <tbody><tr><th scope="row">Average FPS</th><td>58.9</td><td>59.9</td><td>60.0</td></tr><tr><th scope="row">Peak process memory</th><td>90.33 MiB</td><td>92.84 MiB</td><td>92.16 MiB</td></tr><tr><th scope="row">Retained game lists</th><td>1,920 B</td><td>3,200 B</td><td>2,552 B</td></tr></tbody>
+      </table>
+      <p class="callout"><strong>These were not controlled benchmarks.</strong> Separate desktop runs, different build settings, presentation waits and a C timing outlier prevent a language ranking.</p>
+      <p class="note">List sizes reflect capacity policies and field widths, excluding allocator overhead. Shared decoded audio alone uses 31.15 MiB. We compared audio integration; the mixer is the same C library.</p>
+    </section>
+
+    <section class="slide" id="conclusion" aria-labelledby="title-conclusion" data-title="The conclusion">
+      <p class="eyebrow">08 / The conclusion</p>
+      <h2 id="title-conclusion">For this game, I’d pick Odin.</h2>
+      <p class="lead">The best balance of readable gameplay and convenient data handling in these ports.</p>
+      <div class="verdict-grid">
+        <div class="verdict"><span class="chip c">C</span><h3>Most direct foundation</h3><p>Easy to follow, with the most manual collection machinery.</p></div>
+        <div class="verdict featured"><span class="chip odin">Odin</span><h3>Best balance here</h3><p>Less plumbing, while keeping the game logic straightforward.</p></div>
+        <div class="verdict"><span class="chip zig">Zig</span><h3>Clearest failure paths</h3><p>Allocation and cleanup are easier to audit, with more syntax to read.</p></div>
+      </div>
+      <p class="takeaway">Dynamic data exposed the language tradeoffs.<br>More ambitious content would expose the architecture.</p>
+      <p class="note">A judgment about this small experiment, not a universal ranking. The original fixed-array C version remains tagged <code>c-original-reference</code>.</p>
+      <p class="source-links"><a href="comparison.md">Comparison &amp; code walkthroughs ↗</a><a href="journal/README.md">Development journal ↗</a><a href="https://github.com/framkant/gnarlaxx">Repository ↗</a></p>
+    </section>
+  </main>
+  <footer>
+    <div class="bottom-inner">
+      <div class="counter" id="counter" role="status" aria-live="polite" aria-atomic="true">01 / 08</div>
+      <nav class="dots" id="dots" aria-label="Choose a slide"></nav>
+      <div class="navigation"><span class="hint">← → to navigate</span><button class="nav-button" id="previous" type="button" aria-label="Previous slide">←</button><button class="nav-button next" id="next" type="button" aria-label="Next slide">Next →</button></div>
+    </div>
+  </footer>
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const previous = document.getElementById('previous');
+      const next = document.getElementById('next');
+      const counter = document.getElementById('counter');
+      const dots = document.getElementById('dots');
+      let current = 0;
+      const buttons = slides.map((slide, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'dot';
+        button.title = `${index + 1}. ${slide.dataset.title}`;
+        button.setAttribute('aria-label', button.title);
+        button.setAttribute('aria-controls', slide.id);
+        button.addEventListener('click', () => show(index));
+        dots.append(button);
+        return button;
+      });
+      function show(index, updateHash = true) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        const focusedSlide = document.activeElement.closest('.slide');
+        slides.forEach((slide, i) => { slide.hidden = i !== current; });
+        buttons.forEach((button, i) => {
+          if (i === current) button.setAttribute('aria-current', 'step');
+          else button.removeAttribute('aria-current');
+        });
+        previous.disabled = current === 0;
+        next.disabled = current === slides.length - 1;
+        counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+        counter.setAttribute('aria-label', `Slide ${current + 1} of ${slides.length}: ${slides[current].dataset.title}`);
+        document.title = `${slides[current].dataset.title} — Gnarlaxx`;
+        if (updateHash && location.hash !== `#${slides[current].id}`) history.pushState(null, '', `#${slides[current].id}`);
+        if ((focusedSlide && focusedSlide.hidden) || document.activeElement.disabled) buttons[current].focus({ preventScroll: true });
+        window.scrollTo(0, 0);
+      }
+      function fromHash() {
+        const index = slides.findIndex(slide => `#${slide.id}` === location.hash);
+        show(index < 0 ? 0 : index, false);
+      }
+      previous.addEventListener('click', () => show(current - 1));
+      next.addEventListener('click', () => show(current + 1));
+      window.addEventListener('hashchange', fromHash);
+      window.addEventListener('popstate', fromHash);
+      document.addEventListener('keydown', event => {
+        if (event.altKey || event.ctrlKey || event.metaKey || event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+        const key = event.key;
+        if (key === 'ArrowRight' || key === 'PageDown') { event.preventDefault(); show(current + 1); }
+        else if (key === 'ArrowLeft' || key === 'PageUp') { event.preventDefault(); show(current - 1); }
+        else if (key === 'Home') { event.preventDefault(); show(0); }
+        else if (key === 'End') { event.preventDefault(); show(slides.length - 1); }
+        else if (key === ' ' && !event.target.closest('button, a')) { event.preventDefault(); show(current + (event.shiftKey ? -1 : 1)); }
+      });
+      document.getElementById('print').addEventListener('click', () => window.print());
+      const fullscreen = document.getElementById('fullscreen');
+      if (!document.fullscreenEnabled) fullscreen.hidden = true;
+      fullscreen.addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+          else await document.documentElement.requestFullscreen();
+        } catch {
+          fullscreen.textContent = 'Use browser full screen';
+        }
+      });
+      document.addEventListener('fullscreenchange', () => { fullscreen.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen'; });
+      fromHash();
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+</body>
+</html>

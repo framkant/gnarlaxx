@@ -22,6 +22,14 @@ tagged events, rendering commands and score handling. All three versions have
 been user-tested. The [comparison and short code walkthroughs](docs/comparison.md)
 record the observed strengths, costs and measurement limits.
 
+For a visual overview, open the [eight-slide HTML presentation](docs/comparison.html).
+It works offline as a single file: use the arrow keys or on-screen controls to
+navigate, or **Print / PDF** for one slide per page.
+
+```sh
+open docs/comparison.html
+```
+
 Build the C version on macOS with Xcode command-line tools and CMake:
 
 ```sh
