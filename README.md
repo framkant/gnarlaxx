@@ -18,8 +18,9 @@ The tag `c-original-reference` preserves the verified C implementation of the
 original task, including its fixed game arrays. Current C uses dynamic collections
 with explicit ownership, allocation failure, replay, and cleanup, and is the
 comparison baseline for Odin and Zig. Both ports use their own dynamic collections,
-tagged events, rendering commands and score handling. Zig is ready for user
-playtesting; walkthroughs and the language comparison are the next milestone.
+tagged events, rendering commands and score handling. All three versions have
+been user-tested. The [comparison and short code walkthroughs](docs/comparison.md)
+record the observed strengths, costs and measurement limits.
 
 Build the C version on macOS with Xcode command-line tools and CMake:
 
@@ -102,7 +103,7 @@ in; game builds do not need the asset-generation tools.
 - [Shared asset manifest](assets/manifest.json)
 
 The journal records decisions, work performed, checks, and remaining questions
-at meaningful checkpoints. The implementations will use shared assets and
+at meaningful checkpoints. The implementations use shared assets and
 behavior while keeping each language's code idiomatic.
 
 ## License

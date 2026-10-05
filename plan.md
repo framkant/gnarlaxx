@@ -138,8 +138,11 @@ verified: the complete native mission matches C's score and timing; gameplay,
 allocation failures, persistence, shared audio, input and cleanup checks pass.
 The user has playtested Odin and confirmed similar behavior. M3 Zig is implemented
 and verified, including a complete native mission, allocation-failure cleanup,
-input, persistence, audio and rendering checks. Zig is ready for user playtesting.
-M4 walkthroughs and the language comparison remain next.
+input, persistence, audio and rendering checks. The user has playtested Zig and
+confirmed that it works well. M4 is complete: the
+[comparison and short walkthroughs](docs/comparison.md) trace corresponding code
+paths and record concrete tradeoffs and the limits of the rough measurements.
+All planned milestones are complete.
 See the [C build notes](implementations/c/README.md),
 [Odin build notes](implementations/odin/README.md),
 [Zig build notes](implementations/zig/README.md),
