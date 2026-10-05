@@ -1,12 +1,23 @@
 # Gnarlaxx
 
-A small vertical shoot 'em up for learning how **C, Odin, and Zig** express the
-same game. The focus is the interaction between graphics, audio, input, and
-gameplay, and the concrete tradeoffs that appear in each implementation.
+Gnarlaxx is a small test of an **agentic development workflow using GPT 6 Astra**.
+The thesis was that **for small projects, a rough plan is enough to get a quality
+output**.
 
-One mission, three enemy types, a multipart boss, music and effects, pause, and
-local high scores. Keep it simple: this is a learning experiment, with functional
-retro art and room to cut corners.
+We kept a [development journal](docs/journal/README.md) to track the user input
+needed along the way: clarifications, corrections, feedback, and changes in
+direction. That record lets us evaluate whether the thesis held and how much
+human intervention the result required.
+
+The same game was implemented in **C, Odin, and Zig** to explore whether differences
+in the model's likely exposure to each language affected the output—for example,
+whether an implementation became unnecessarily complicated or went beyond the
+requested scope. The language comparison also examines how each version expresses
+the interaction between graphics, audio, input, and gameplay.
+
+The test project is a small vertical shoot 'em up: one mission, three enemy types,
+a multipart boss, music and effects, pause, and local high scores. It deliberately
+uses a small scope, functional retro art, and room to cut corners.
 
 ## Current state
 

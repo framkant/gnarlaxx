@@ -28,3 +28,4 @@ commits alongside the journal.
 15. [Comparing C, Odin and Zig](0015_comparing_c_odin_and_zig_20261005.md)
 16. [Presenting the language comparison](0016_presenting_the_language_comparison_20261005.md)
 17. [Beyond the small-game comparison](0017_beyond_the_small_game_comparison_20261005.md)
+18. [Clarifying the workflow experiment](0018_clarifying_the_workflow_experiment_20261005.md)
