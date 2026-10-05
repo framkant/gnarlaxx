@@ -23,3 +23,4 @@ commits alongside the journal.
 10. [Dynamic C comparison baseline](0010_dynamic_c_comparison_baseline_20261004.md)
 11. [Starting the Odin port](0011_starting_the_odin_port_20261004.md)
 12. [Completing and verifying Odin](0012_completing_and_verifying_odin_20261004.md)
+13. [Starting the Zig port](0013_starting_the_zig_port_20261005.md)

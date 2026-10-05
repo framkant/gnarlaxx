@@ -17,6 +17,14 @@
   "sokol_odin/glue/glue.odin": "6a1a53b9214aa4a120a592f947dbf0873c1eeacb82b2e990dab068bff6da3dbf",
   "sokol_odin/log/log.odin": "3b7a7ec13b1b08d2131c905aad12887f78baea1a086a1462c09ab3c31171cc29",
   "sokol_odin/time/time.odin": "3be100516af91cd6f5d7d089303f75783521c905e5eaab1ea06b49fc9a439df5",
+  "sokol_zig/LICENSE": "e471e6c56be2900574f393592cf95149f2a1a89f5a94866a6b719c986be9c964",
+  "sokol_zig/app.zig": "e2bfa60be0cfd9457038dbea228481335fd09a1184b64b7ec1fb55d6b02dd9f9",
+  "sokol_zig/gfx.zig": "efca69f636b53e2d657af70cb186d4a3216acdb83760074b633671c872456e12",
+  "sokol_zig/gl.zig": "beca23d3a3b8879ac47322176559549f01c012a0d5a40c48e22a01727d3e34ba",
+  "sokol_zig/glue.zig": "ef3287d2a29525260503bcf84bc5bcfce3b39e98221d995dffeac44d03dc0391",
+  "sokol_zig/log.zig": "740762f94a5f0f19be8ab2337242e28f6f9acfeaebdfbcc7bc50ba6de8e4df48",
+  "sokol_zig/root.zig": "3d2d8c92ebaf21f90d4ba0de0394ed5de9651268e0405355555fdd1a0aca2391",
+  "sokol_zig/time.zig": "6caf5a5bdec55f314d0088df206536ef69dba64cf98d0c6c268dbeefcff0885b",
   "stb/LICENSE": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63",
   "stb/stb_image.h": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
 }
