@@ -11,7 +11,7 @@ lines += ['};', 'pub const Rect = struct { x: i32, y: i32, w: i32, h: i32 };',
           'pub const rectangles = [_]Rect{']
 for value in m['sprites'].values():
     lines.append('    .{ ' + ', '.join('.' + k + ' = ' + str(v) for k,v in zip(('x','y','w','h'),value)) + ' },')
-lines += ['};', 'pub fn rect(id: Sprite) Rect { return rectangles[@intFromEnum(id)]; }']
+lines += ['};', 'pub fn rect(id: Sprite) Rect {', '    return rectangles[@backingInt(id)];', '}']
 for key,values in [('ATLAS',m['atlas']['size']),('FONT',m['font']['size']),('FONT_CELL',m['font']['cell'])]:
     for axis,value in zip(('WIDTH','HEIGHT'),values): lines.append('pub const {}_{} = {};'.format(key,axis,value))
 for key in ('columns','first_codepoint','count','advance'):
@@ -20,8 +20,8 @@ p=m['background']['pattern']
 lines += ['pub const BACKGROUND_TILE_SIZE = {};'.format(m['background']['tile_size']),
           'pub const BACKGROUND_PATTERN_ROWS = {};'.format(len(p)),
           'pub const BACKGROUND_PATTERN_COLUMNS = {};'.format(len(p[0])),
-          'pub const BACKGROUND_PATTERN = [BACKGROUND_PATTERN_ROWS][BACKGROUND_PATTERN_COLUMNS]u8{' +
-          ', '.join('.{' + ', '.join(map(str,row)) + '}' for row in p) + '};']
+          'pub const BACKGROUND_PATTERN = [BACKGROUND_PATTERN_ROWS][BACKGROUND_PATTERN_COLUMNS]u8{ ' +
+          ', '.join('.{ ' + ', '.join(map(str,row)) + ' }' for row in p) + ' };']
 for part in ('left_gun','right_gun','core'):
     for axis,value in zip(('X','Y'),m['boss'][part+'_offset']):
         lines.append('pub const BOSS_{}_OFFSET_{} = {};'.format(part.upper(),axis,value))

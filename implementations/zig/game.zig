@@ -579,7 +579,6 @@ test "complete missions and retained storage on replay" {
                 if (event == .finished) finished += 1;
             }
         }
-        std.debug.print("Zig mission {d}: {s}, score={d}, time={d:.2}s, heap={d} bytes\n", .{ run + 1, @tagName(g.scene), g.score, g.level_time, g.heapBytes() });
         try std.testing.expectEqual(Scene.victory, g.scene);
         try std.testing.expectEqual(@as(i32, 9600), g.score);
         try std.testing.expectApproxEqAbs(@as(f32, 52.75), g.level_time, 0.02);
@@ -590,4 +589,205 @@ test "complete missions and retained storage on replay" {
         if (run > 0) try std.testing.expectEqual(retained, g.heapBytes());
         retained = g.heapBytes();
     }
+}
+
+fn advance(g: *Game, steps: usize, input: Input) !void {
+    for (0..steps) |_| {
+        g.events.clearRetainingCapacity();
+        try g.update(input, p.GAME_STEP);
+    }
+}
+fn playing(g: *Game) !void {
+    try g.start();
+    g.scene = .play;
+    g.fade = 0;
+    g.player.pos = .{ .x = p.GAME_CENTER_X, .y = p.PLAYER_SPAWN_Y };
+    g.events.clearRetainingCapacity();
+}
+fn injectHit(g: *Game, pos: Vec2) !void {
+    g.events.clearRetainingCapacity();
+    g.bullets.clearRetainingCapacity();
+    try g.bullet(pos, .{}, false);
+    try g.update(.{}, p.GAME_STEP);
+}
+test "movement, intro cues, menus, pause, sound and replay" {
+    var g = Game.init(std.testing.allocator);
+    defer g.deinit();
+    try g.update(.{ .down = true }, p.GAME_STEP);
+    try std.testing.expectEqual(MenuChoice.scores, g.menu_choice);
+    try g.update(.{ .confirm = true }, p.GAME_STEP);
+    try std.testing.expectEqual(Scene.scores, g.scene);
+    try g.update(.{ .cancel = true }, p.GAME_STEP);
+    try std.testing.expectEqual(Scene.menu, g.scene);
+    try g.start();
+    var warning: usize = 0;
+    var go: usize = 0;
+    for (0..840) |_| {
+        g.events.clearRetainingCapacity();
+        try g.update(.{}, p.GAME_STEP);
+        for (g.events.items) |event| switch (event) {
+            .sound => |sound| {
+                if (sound.id == .intro_warning) warning += 1;
+                if (sound.id == .intro_go) go += 1;
+            },
+            .finished => {},
+        };
+    }
+    try std.testing.expect(warning == 1 and go == 1 and g.scene == .play and g.fade == 0);
+    try std.testing.expectEqual(@as(f32, p.PLAYER_SPAWN_Y), g.player.pos.y);
+    try advance(&g, 60, .{ .x = 1 });
+    try std.testing.expect(g.player.pos.x > 250 and g.player.velocity.x > 150);
+    const x = g.player.pos.x;
+    const speed = g.player.velocity.x;
+    try advance(&g, 12, .{});
+    try std.testing.expect(g.player.pos.x > x and g.player.velocity.x < speed);
+    try advance(&g, 300, .{ .x = 1, .y = 1, .fire = true });
+    try std.testing.expect(g.player.pos.x <= 384 and g.player.pos.y <= 468 and g.bullets.items.len > 0);
+    g.pause();
+    const time = g.level_time;
+    const pos = g.player.pos;
+    const shot = g.bullets.items[0].pos;
+    try advance(&g, 120, .{ .x = 1, .fire = true });
+    try std.testing.expectEqual(time, g.level_time);
+    try std.testing.expectEqual(pos, g.player.pos);
+    try std.testing.expectEqual(shot, g.bullets.items[0].pos);
+    try g.update(.{ .sound = true }, p.GAME_STEP);
+    try std.testing.expectEqual(Scene.sound, g.scene);
+    try advance(&g, 40, .{ .right = true });
+    try std.testing.expectEqual(@as(f32, 1), g.volumes.get(.master));
+    try advance(&g, 40, .{ .left = true });
+    try std.testing.expectEqual(@as(f32, 0), g.volumes.get(.master));
+    try g.update(.{ .cancel = true }, p.GAME_STEP);
+    try std.testing.expectEqual(Scene.pause, g.scene);
+    try g.update(.{ .confirm = true }, p.GAME_STEP);
+    try std.testing.expectEqual(Scene.play, g.scene);
+    g.pause();
+    try g.update(.{ .menu = true }, p.GAME_STEP);
+    try std.testing.expectEqual(Scene.menu, g.scene);
+    try g.start();
+    try std.testing.expectEqual(@as(f32, 0), g.volumes.get(.master));
+}
+test "boss gun and core collisions, scoring and three lives" {
+    var g = Game.init(std.testing.allocator);
+    defer g.deinit();
+    try playing(&g);
+    g.waves_spawned = p.PAWN_WAVE_COUNT;
+    g.drones_spawned = p.DRONE_COUNT;
+    try g.spawnBoss();
+    g.boss.pos = .{ .x = p.GAME_CENTER_X, .y = p.BOSS_REST_Y };
+    g.boss.phase = .warn;
+    try injectHit(&g, g.boss.pos);
+    try std.testing.expect(g.boss.core_hp == 10 and !g.boss.core_open);
+    for (0..9) |_| try injectHit(&g, g.boss.gun(false));
+    try std.testing.expect(g.boss.left_hp == 1 and !g.boss.core_open);
+    try injectHit(&g, g.boss.gun(false));
+    for (0..10) |_| try injectHit(&g, g.boss.gun(true));
+    try std.testing.expect(g.boss.core_open and g.boss.right_hp == 0);
+    g.bullets.clearRetainingCapacity();
+    try g.bullet(g.boss.pos.add(.{ .y = 65 }), .{ .y = -p.PLAYER_SHOT_SPEED }, false);
+    try advance(&g, 12, .{});
+    try std.testing.expectEqual(@as(i32, 9), g.boss.core_hp);
+    for (0..9) |_| try injectHit(&g, g.boss.core());
+    try std.testing.expect(g.scene == .victory and !g.boss.active and g.score == 3750 and g.bullets.items.len == 0);
+    var finished: usize = 0;
+    for (g.events.items) |event| {
+        if (event == .finished) finished += 1;
+    }
+    try std.testing.expectEqual(@as(usize, 1), finished);
+    try advance(&g, 120, .{});
+    try g.update(.{ .confirm = true }, p.GAME_STEP);
+    try std.testing.expect(g.scene == .briefing and g.score == 0 and g.player.lives == 3);
+    g.scene = .play;
+    g.player.pos = .{ .x = p.GAME_CENTER_X, .y = p.PLAYER_SPAWN_Y };
+    for (0..3) |life| {
+        g.player.invincible = 0;
+        try g.bullet(g.player.pos, .{}, true);
+        try g.bullet(g.player.pos, .{}, true);
+        try g.update(.{}, p.GAME_STEP);
+        try std.testing.expectEqual(@as(i32, 2) - @as(i32, @intCast(life)), g.player.lives);
+    }
+    try std.testing.expectEqual(Scene.game_over, g.scene);
+}
+test "complete boss attack cycle" {
+    var g = Game.init(std.testing.allocator);
+    defer g.deinit();
+    try playing(&g);
+    g.player.invincible = 1000;
+    var phases: std.enums.EnumSet(BossPhase) = .empty;
+    for (0..120 * 85) |_| {
+        g.events.clearRetainingCapacity();
+        try g.update(.{}, p.GAME_STEP);
+        if (g.boss.active) phases.insert(g.boss.phase);
+    }
+    try std.testing.expectEqual(std.enums.values(BossPhase).len, phases.count());
+    try std.testing.expect(g.waves_spawned == 10 and g.drones_spawned == 5);
+}
+
+// Reject both in-place resize and remap: ArrayList must allocate, copy and free.
+// Layer the standard failing allocator around this to test every allocation point.
+const MovingAllocator = struct {
+    backing: Allocator,
+    fn allocator(self: *MovingAllocator) Allocator {
+        return .{ .ptr = self, .vtable = &.{ .alloc = alloc, .resize = Allocator.noResize, .remap = Allocator.noRemap, .free = free } };
+    }
+    fn alloc(ctx: *anyopaque, len: usize, alignment: std.mem.Alignment, ra: usize) ?[*]u8 {
+        const self: *MovingAllocator = @ptrCast(@alignCast(ctx));
+        return self.backing.rawAlloc(len, alignment, ra);
+    }
+    fn free(ctx: *anyopaque, memory: []u8, alignment: std.mem.Alignment, ra: usize) void {
+        const self: *MovingAllocator = @ptrCast(@alignCast(ctx));
+        self.backing.rawFree(memory, alignment, ra);
+    }
+};
+fn allocationStress(allocator: Allocator) !void {
+    var g = Game.init(allocator);
+    defer g.deinit();
+    try g.start();
+    for (0..2000) |i| {
+        try g.enemies.append(allocator, .{ .active = i % 2 == 0, .pos = .{ .x = f(i) } });
+        try g.bullets.append(allocator, .{ .active = i % 2 == 0, .pos = .{ .x = f(i) } });
+        try g.explosions.append(allocator, .{ .active = i % 2 == 0, .pos = .{ .x = f(i) } });
+        try g.sound(.player_shot, 1);
+    }
+    compact(Enemy, &g.enemies);
+    compact(Bullet, &g.bullets);
+    compact(Explosion, &g.explosions);
+    try std.testing.expectEqual(@as(usize, 1000), g.enemies.items.len);
+    try std.testing.expectEqual(@as(usize, 1000), g.bullets.items.len);
+    try std.testing.expectEqual(@as(usize, 1000), g.explosions.items.len);
+    for (g.enemies.items, 0..) |e, i| try std.testing.expectEqual(f(i * 2), e.pos.x);
+    for (g.bullets.items, 0..) |b, i| try std.testing.expectEqual(f(i * 2), b.pos.x);
+    for (g.explosions.items, 0..) |e, i| try std.testing.expectEqual(f(i * 2), e.pos.x);
+    const heap = g.heapBytes();
+    try g.start();
+    try std.testing.expectEqual(heap, g.heapBytes());
+    try std.testing.expect(g.enemies.items.len == 0 and g.bullets.items.len == 0 and g.explosions.items.len == 0 and g.events.items.len == 1);
+}
+test "moving growth, stable compaction, replay and every allocation failure" {
+    var moving = MovingAllocator{ .backing = std.testing.allocator };
+    var counter = std.testing.FailingAllocator.init(moving.allocator(), .{});
+    try allocationStress(counter.allocator());
+    try std.testing.expect(counter.alloc_index > 0 and counter.allocated_bytes == counter.freed_bytes);
+    try std.testing.checkAllAllocationFailures(moving.allocator(), allocationStress, .{});
+}
+test "allocation failure is terminal and the failed update remains destructible" {
+    var moving = MovingAllocator{ .backing = std.testing.allocator };
+    var failing = std.testing.FailingAllocator.init(moving.allocator(), .{ .fail_index = 0 });
+    var g = Game.init(failing.allocator());
+    defer g.deinit();
+    try std.testing.expectError(error.OutOfMemory, g.start());
+    try std.testing.expect(g.allocation_failed);
+    try std.testing.expectError(error.OutOfMemory, g.start());
+    g.deinit();
+    failing = std.testing.FailingAllocator.init(moving.allocator(), .{});
+    g = Game.init(failing.allocator());
+    try playing(&g);
+    // Fail the first bullet allocation from inside update; existing events survive.
+    failing.fail_index = failing.alloc_index;
+    try std.testing.expectError(error.OutOfMemory, g.update(.{ .fire = true }, p.GAME_STEP));
+    try std.testing.expect(g.allocation_failed);
+    const time = g.level_time;
+    try std.testing.expectError(error.OutOfMemory, g.update(.{}, p.GAME_STEP));
+    try std.testing.expectEqual(time, g.level_time);
+    try std.testing.expectError(error.OutOfMemory, g.start());
 }

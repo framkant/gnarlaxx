@@ -24,3 +24,4 @@ commits alongside the journal.
 11. [Starting the Odin port](0011_starting_the_odin_port_20261004.md)
 12. [Completing and verifying Odin](0012_completing_and_verifying_odin_20261004.md)
 13. [Starting the Zig port](0013_starting_the_zig_port_20261005.md)
+14. [Completing and verifying Zig](0014_completing_and_verifying_zig_20261005.md)

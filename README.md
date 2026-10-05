@@ -10,16 +10,16 @@ retro art and room to cut corners.
 
 ## Current state
 
-The **C and Odin versions are playable on macOS**, using Sokol for graphics, input,
-and audio. Both include the full mission, boss phases, menus, pause, volume
+The **C, Odin and Zig versions are playable on macOS**, using Sokol for graphics, input,
+and audio. All include the full mission, boss phases, menus, pause, volume
 controls, and saved high scores. Audio decoding/mixing/output is now a small
-[local C library](libs/audio/README.md) that all three implementations will use.
+[local C library](libs/audio/README.md) used by all three implementations.
 The tag `c-original-reference` preserves the verified C implementation of the
 original task, including its fixed game arrays. Current C uses dynamic collections
 with explicit ownership, allocation failure, replay, and cleanup, and is the
-comparison baseline for Odin and Zig. Odin uses its own dynamic arrays, tagged
-events, rendering commands and score handling. Zig is next; walkthroughs follow
-the ports.
+comparison baseline for Odin and Zig. Both ports use their own dynamic collections,
+tagged events, rendering commands and score handling. Zig is ready for user
+playtesting; walkthroughs and the language comparison are the next milestone.
 
 Build the C version on macOS with Xcode command-line tools and CMake:
 
@@ -38,6 +38,16 @@ python3 tools/build_odin.py
 
 See the [Odin build and test notes](implementations/odin/README.md), including the
 local LLVM workaround for the development machine's older Homebrew compiler.
+
+Build Zig with Zig 0.17.0, Python 3 and the same native tools:
+
+```sh
+python3 tools/build_zig.py --test
+./build/zig/release/bin/gnarlaxx
+```
+
+See the [Zig build notes](implementations/zig/README.md) for direct `zig build`
+commands and the project-local compiler setup used on the development machine.
 
 Dependencies are [vendored and pinned](vendor/README.md); no network access or
 asset-generation tools are required to build or run.
@@ -64,8 +74,9 @@ after a hit.
 
 High scores are stored in `~/Library/Application Support/Gnarlaxx/scores.txt`.
 Volume settings last for the current session. See the [C](implementations/c/README.md)
-and [Odin](implementations/odin/README.md) build notes for path overrides, diagnostics,
-and testing instructions. Both versions use the same high-score file format.
+[Odin](implementations/odin/README.md), and [Zig](implementations/zig/README.md)
+build notes for path overrides, diagnostics, and testing instructions. All versions
+use the same high-score file format.
 
 ## Inspect the assets
 

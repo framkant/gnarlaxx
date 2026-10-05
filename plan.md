@@ -127,7 +127,7 @@ like a large variant of the drone and roams the top of the screen.
 
 ## Milestones
 
-Current status (2026-10-04): M0 is complete. The first playable C version of M1
+Current status (2026-10-05): M0 is complete. The first playable C version of M1
 is built and tested, including native rendering/audio, the complete mission,
 menus, pause, and score persistence. User playtesting and the properties cleanup
 are complete. M1a audio extraction is verified and preserved as
@@ -136,9 +136,13 @@ verified, including growth, removal, allocation failure, replay, and cleanup.
 This is the baseline for the Odin and Zig ports. M2 Odin is implemented and
 verified: the complete native mission matches C's score and timing; gameplay,
 allocation failures, persistence, shared audio, input and cleanup checks pass.
-Odin is ready for user playtesting. M3 Zig has not started.
+The user has playtested Odin and confirmed similar behavior. M3 Zig is implemented
+and verified, including a complete native mission, allocation-failure cleanup,
+input, persistence, audio and rendering checks. Zig is ready for user playtesting.
+M4 walkthroughs and the language comparison remain next.
 See the [C build notes](implementations/c/README.md),
 [Odin build notes](implementations/odin/README.md),
+[Zig build notes](implementations/zig/README.md),
 and [development journal](docs/journal/README.md). Continue adding numbered journal
 entries at meaningful checkpoints alongside regular Git commits.
 
