@@ -27,3 +27,4 @@ commits alongside the journal.
 14. [Completing and verifying Zig](0014_completing_and_verifying_zig_20261005.md)
 15. [Comparing C, Odin and Zig](0015_comparing_c_odin_and_zig_20261005.md)
 16. [Presenting the language comparison](0016_presenting_the_language_comparison_20261005.md)
+17. [Beyond the small-game comparison](0017_beyond_the_small_game_comparison_20261005.md)

@@ -1,0 +1,176 @@
+{
+  "runs": [
+    {
+      "language": "c",
+      "profile": "release",
+      "fresh_seconds": 3.950810875,
+      "edit_seconds": [
+        0.3918711669999997,
+        0.38673537500000066,
+        0.38986595899999976
+      ],
+      "unchanged_seconds": [
+        0.027508916999999578,
+        0.028304291000000426,
+        0.029005749999999608
+      ],
+      "edit_median": 0.38986595899999976,
+      "unchanged_median": 0.028304291000000426,
+      "command": [
+        "cmake",
+        "--build",
+        "<repo>/build/build-timing/20261005_101906/c-release/build/c",
+        "--target",
+        "gnarlaxx",
+        "-j",
+        "4"
+      ]
+    },
+    {
+      "language": "odin",
+      "profile": "release",
+      "fresh_seconds": 6.012232334,
+      "edit_seconds": [
+        1.7825078750000003,
+        1.7855922920000005,
+        1.8098349589999998
+      ],
+      "unchanged_seconds": [
+        1.8041497500000006,
+        1.785273709000002,
+        1.7859225410000015
+      ],
+      "edit_median": 1.7855922920000005,
+      "unchanged_median": 1.7859225410000015,
+      "command": [
+        "python3",
+        "tools/build_odin.py",
+        "--odin",
+        "/opt/homebrew/Cellar/odin/2025-03/libexec/odin",
+        "--library-path",
+        "/opt/homebrew/Cellar/llvm/19.1.7_1/lib:/opt/homebrew/Cellar/z3/4.14.1/lib"
+      ]
+    },
+    {
+      "language": "zig",
+      "profile": "release",
+      "fresh_seconds": 73.68103579199999,
+      "edit_seconds": [
+        7.737815624999996,
+        7.609352583000003,
+        7.692327708999997
+      ],
+      "unchanged_seconds": [
+        0.9244929580000019,
+        0.8764867910000049,
+        0.913107624999995
+      ],
+      "edit_median": 7.692327708999997,
+      "unchanged_median": 0.913107624999995,
+      "command": [
+        "python3",
+        "tools/build_zig.py",
+        "--zig",
+        "<repo>/build/zig/toolchain/zig-aarch64-macos-0.17.0/zig"
+      ],
+      "clean_warm_tools_seconds": 13.073155375
+    },
+    {
+      "language": "c",
+      "profile": "debug",
+      "fresh_seconds": 2.2416240829999907,
+      "edit_seconds": [
+        0.33137233300000446,
+        0.3236004589999908,
+        0.34528283299999885
+      ],
+      "unchanged_seconds": [
+        0.03126683400000729,
+        0.03111858300000847,
+        0.03067049999999938
+      ],
+      "edit_median": 0.33137233300000446,
+      "unchanged_median": 0.03111858300000847,
+      "command": [
+        "cmake",
+        "--build",
+        "<repo>/build/build-timing/20261005_101906/c-debug/build/c",
+        "--target",
+        "gnarlaxx",
+        "-j",
+        "4"
+      ]
+    },
+    {
+      "language": "odin",
+      "profile": "debug",
+      "fresh_seconds": 5.069445832999989,
+      "edit_seconds": [
+        1.136406916999988,
+        1.1360334589999752,
+        1.142782374999996
+      ],
+      "unchanged_seconds": [
+        1.1492397080000103,
+        1.1419244589999948,
+        1.1313892080000016
+      ],
+      "edit_median": 1.136406916999988,
+      "unchanged_median": 1.1419244589999948,
+      "command": [
+        "python3",
+        "tools/build_odin.py",
+        "--odin",
+        "/opt/homebrew/Cellar/odin/2025-03/libexec/odin",
+        "--library-path",
+        "/opt/homebrew/Cellar/llvm/19.1.7_1/lib:/opt/homebrew/Cellar/z3/4.14.1/lib",
+        "--debug"
+      ]
+    },
+    {
+      "language": "zig",
+      "profile": "debug",
+      "fresh_seconds": 70.85670595900001,
+      "edit_seconds": [
+        3.536046583000001,
+        2.4291734589999976,
+        2.419338959000015
+      ],
+      "unchanged_seconds": [
+        1.0382286669999985,
+        0.9574096249999968,
+        0.9478147500000205
+      ],
+      "edit_median": 2.4291734589999976,
+      "unchanged_median": 0.9574096249999968,
+      "command": [
+        "python3",
+        "tools/build_zig.py",
+        "--zig",
+        "<repo>/build/zig/toolchain/zig-aarch64-macos-0.17.0/zig",
+        "--debug"
+      ],
+      "clean_warm_tools_seconds": 5.999759790999999
+    }
+  ],
+  "method": "Fresh build once per language/profile; three distinct shot-speed edits and three unchanged builds. Sequential wall-clock seconds. No tests or downloads. Fresh Zig caches per profile; OS file cache not flushed. Normal repository wrappers and build generators.",
+  "driver_platform": "Darwin-24.6.0-x86_64-i386-64bit",
+  "target": "arm64-apple-macos; all six output architectures checked with file",
+  "hardware": "Apple M3 Max (same machine recorded in the implementation journals)",
+  "toolchains": {
+    "c": "Apple Clang 17.0.0 (clang-1700.6.4.2)",
+    "odin": "dev-2025-03:951bef4ad, matching LLVM 19.1.7 libraries",
+    "zig": "0.17.0"
+  },
+  "date": "2026-10-05",
+  "source_commit": "5c5c863",
+  "notes": [
+    "Compiler and output executables are arm64. The Python 3.7 driver itself reports x86_64 under Rosetta; subprocess compilers and CMake run as arm64.",
+    "C uses CMake/Ninja with four jobs. Odin and Zig use the checked-in Python wrappers, which configure and invoke CMake/Make for shared C dependencies.",
+    "Each fresh_seconds result is a single build in a new source/build copy. Zig global and local caches start empty. OS filesystem and Apple SDK caches are not flushed.",
+    "Each edit changes PLAYER_SHOT_SPEED to a previously unbuilt value: 621, 622, then 623. Source changes occur only in ignored scratch copies.",
+    "Zig clean_warm_tools_seconds is a separate single build after cleaning native libraries and moving aside its local cache; its populated global tool cache is retained.",
+    "No tests, downloads, asset generation, app launch or store packaging are timed. Source-copy setup is outside the timed interval.",
+    "Command paths below use <repo> as a placeholder for the local checkout."
+  ]
+}
