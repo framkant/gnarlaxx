@@ -19,6 +19,10 @@ The test project is a small vertical shoot 'em up: one mission, three enemy type
 a multipart boss, music and effects, pause, and local high scores. It deliberately
 uses a small scope, functional retro art, and room to cut corners.
 
+See the [cost and learning notes](docs/learning-notes.md) for measured effort,
+an approximate API-equivalent cost, and suggestions for repeating or learning
+from the experiment.
+
 ## Current state
 
 The **C, Odin and Zig versions are playable on macOS**, using Sokol for graphics, input,
