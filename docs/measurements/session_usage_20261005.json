@@ -1,0 +1,344 @@
+{
+  "recorded_on": "2026-10-05",
+  "scope": {
+    "description": "First plan-reading turn through the final README clarification; excludes the later usage investigation.",
+    "last_project_commit": "6285cd7",
+    "started_at_utc": "2026-10-04T13:57:07.605Z",
+    "completed_at_utc": "2026-10-05T12:11:56.804Z",
+    "display_timezone": "Europe/Stockholm",
+    "main_completed_turns": 19,
+    "main_recorded_responses": 290,
+    "automatic_review_threads": 4,
+    "automatic_review_completed_turns": 61,
+    "automatic_review_recorded_responses": 61
+  },
+  "tokens": {
+    "main_conversation": {
+      "input_tokens": 35041494,
+      "cached_input_tokens": 33431424,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 306026,
+      "reasoning_output_tokens": 75876,
+      "total_tokens": 35347520
+    },
+    "automatic_approval_reviews": {
+      "input_tokens": 3346171,
+      "cached_input_tokens": 2831104,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 6309,
+      "reasoning_output_tokens": 2599,
+      "total_tokens": 3352480
+    },
+    "combined": {
+      "input_tokens": 38387665,
+      "cached_input_tokens": 36262528,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 312335,
+      "reasoning_output_tokens": 78475,
+      "total_tokens": 38700000
+    }
+  },
+  "time": {
+    "main_active_turn_duration_ms": 10834210,
+    "calendar_elapsed_ms": 80089199
+  },
+  "method": [
+    "Read project-scoped local Codex session logs; filter records at the completion cutoff.",
+    "Sum token_usage_record.payload.usage once per response_id; do not also add token_count events.",
+    "The summed usage matches the final thread_token_usage snapshot in each of the five threads.",
+    "All included usage records have the same root session_id. Automatic approval reviews are reported separately.",
+    "Sum duration_ms over distinct completed main-conversation turns. Tool execution and waits within turns are included; between-turn idle time is excluded.",
+    "Do not add review durations to root turn durations, since their work can overlap.",
+    "Cached input is a subset of input_tokens; reasoning output is a subset of output_tokens. Neither is added again to total_tokens.",
+    "Token counts represent processed model context and generated output, not unique text, source-code size, or a billing statement.",
+    "The record does not measure human working time or pure model inference time. The language stages differ in scope and are not a controlled productivity benchmark.",
+    "This export omits raw transcripts, account information, local session paths, and internal identifiers."
+  ],
+  "main_turns": [
+    {
+      "number": 1,
+      "work": "Read rough plan and ask follow-up questions",
+      "started_at_utc": "2026-10-04T13:57:07.605Z",
+      "completed_at_utc": "2026-10-04T13:57:48.715Z",
+      "duration_ms": 41129,
+      "usage": {
+        "input_tokens": 46771,
+        "cached_input_tokens": 42112,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1090,
+        "reasoning_output_tokens": 475,
+        "total_tokens": 47861
+      }
+    },
+    {
+      "number": 2,
+      "work": "Clarify learning scope and assets",
+      "started_at_utc": "2026-10-04T14:04:55.146Z",
+      "completed_at_utc": "2026-10-04T14:05:25.542Z",
+      "duration_ms": 30390,
+      "usage": {
+        "input_tokens": 17352,
+        "cached_input_tokens": 16256,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 758,
+        "reasoning_output_tokens": 516,
+        "total_tokens": 18110
+      }
+    },
+    {
+      "number": 3,
+      "work": "Replace plan and commit agreed scope",
+      "started_at_utc": "2026-10-04T14:08:52.081Z",
+      "completed_at_utc": "2026-10-04T14:12:29.865Z",
+      "duration_ms": 217782,
+      "usage": {
+        "input_tokens": 135800,
+        "cached_input_tokens": 116736,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 6581,
+        "reasoning_output_tokens": 966,
+        "total_tokens": 142381
+      }
+    },
+    {
+      "number": 4,
+      "work": "Report planning status",
+      "started_at_utc": "2026-10-04T14:17:49.781Z",
+      "completed_at_utc": "2026-10-04T14:17:59.714Z",
+      "duration_ms": 9932,
+      "usage": {
+        "input_tokens": 25902,
+        "cached_input_tokens": 25600,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 196,
+        "reasoning_output_tokens": 135,
+        "total_tokens": 26098
+      }
+    },
+    {
+      "number": 5,
+      "work": "Prepare shared assets and public repository",
+      "started_at_utc": "2026-10-04T14:21:33.521Z",
+      "completed_at_utc": "2026-10-04T14:36:38.498Z",
+      "duration_ms": 904954,
+      "usage": {
+        "input_tokens": 2003940,
+        "cached_input_tokens": 1922432,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 25149,
+        "reasoning_output_tokens": 7608,
+        "total_tokens": 2029089
+      }
+    },
+    {
+      "number": 6,
+      "work": "Implement and verify playable C game",
+      "started_at_utc": "2026-10-04T14:43:16.297Z",
+      "completed_at_utc": "2026-10-04T15:13:49.605Z",
+      "duration_ms": 1833341,
+      "usage": {
+        "input_tokens": 5507950,
+        "cached_input_tokens": 5298944,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 51580,
+        "reasoning_output_tokens": 17438,
+        "total_tokens": 5559530
+      }
+    },
+    {
+      "number": 7,
+      "work": "Respond to user playtest feedback",
+      "started_at_utc": "2026-10-04T15:27:41.454Z",
+      "completed_at_utc": "2026-10-04T15:28:02.859Z",
+      "duration_ms": 21405,
+      "usage": {
+        "input_tokens": 199004,
+        "cached_input_tokens": 198784,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 526,
+        "reasoning_output_tokens": 467,
+        "total_tokens": 199530
+      }
+    },
+    {
+      "number": 8,
+      "work": "Replace magic numbers with derived properties",
+      "started_at_utc": "2026-10-04T15:35:30.404Z",
+      "completed_at_utc": "2026-10-04T15:50:01.644Z",
+      "duration_ms": 871192,
+      "usage": {
+        "input_tokens": 1403460,
+        "cached_input_tokens": 1313792,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 25638,
+        "reasoning_output_tokens": 3966,
+        "total_tokens": 1429098
+      }
+    },
+    {
+      "number": 9,
+      "work": "Discuss C architecture strengths and weaknesses",
+      "started_at_utc": "2026-10-04T15:52:43.515Z",
+      "completed_at_utc": "2026-10-04T15:53:27.851Z",
+      "duration_ms": 44335,
+      "usage": {
+        "input_tokens": 85094,
+        "cached_input_tokens": 84480,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1016,
+        "reasoning_output_tokens": 516,
+        "total_tokens": 86110
+      }
+    },
+    {
+      "number": 10,
+      "work": "Record architecture discussion in journal",
+      "started_at_utc": "2026-10-04T15:57:47.217Z",
+      "completed_at_utc": "2026-10-04T15:59:12.703Z",
+      "duration_ms": 85486,
+      "usage": {
+        "input_tokens": 445128,
+        "cached_input_tokens": 391424,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2004,
+        "reasoning_output_tokens": 285,
+        "total_tokens": 447132
+      }
+    },
+    {
+      "number": 11,
+      "work": "Extract audio library, tag original C, and implement dynamic C",
+      "started_at_utc": "2026-10-04T16:07:25.644Z",
+      "completed_at_utc": "2026-10-04T16:26:52.691Z",
+      "duration_ms": 1167035,
+      "usage": {
+        "input_tokens": 2433754,
+        "cached_input_tokens": 2359296,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 34521,
+        "reasoning_output_tokens": 10013,
+        "total_tokens": 2468275
+      }
+    },
+    {
+      "number": 12,
+      "work": "Implement and verify Odin port",
+      "started_at_utc": "2026-10-04T16:58:44.654Z",
+      "completed_at_utc": "2026-10-04T17:23:21.754Z",
+      "duration_ms": 1477070,
+      "usage": {
+        "input_tokens": 5374253,
+        "cached_input_tokens": 5126016,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 52839,
+        "reasoning_output_tokens": 8573,
+        "total_tokens": 5427092
+      }
+    },
+    {
+      "number": 13,
+      "work": "Implement and verify Zig port",
+      "started_at_utc": "2026-10-05T06:49:03.583Z",
+      "completed_at_utc": "2026-10-05T07:22:42.189Z",
+      "duration_ms": 2018563,
+      "usage": {
+        "input_tokens": 10045070,
+        "cached_input_tokens": 9822848,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 52597,
+        "reasoning_output_tokens": 11338,
+        "total_tokens": 10097667
+      }
+    },
+    {
+      "number": 14,
+      "work": "Compare implementations",
+      "started_at_utc": "2026-10-05T07:37:12.967Z",
+      "completed_at_utc": "2026-10-05T07:43:03.671Z",
+      "duration_ms": 350696,
+      "usage": {
+        "input_tokens": 756974,
+        "cached_input_tokens": 712576,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8311,
+        "reasoning_output_tokens": 607,
+        "total_tokens": 765285
+      }
+    },
+    {
+      "number": 15,
+      "work": "Create HTML comparison presentation",
+      "started_at_utc": "2026-10-05T07:45:53.461Z",
+      "completed_at_utc": "2026-10-05T08:01:27.955Z",
+      "duration_ms": 934487,
+      "usage": {
+        "input_tokens": 1929636,
+        "cached_input_tokens": 1868928,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 25089,
+        "reasoning_output_tokens": 5510,
+        "total_tokens": 1954725
+      }
+    },
+    {
+      "number": 16,
+      "work": "Measure builds and discuss broader language tradeoffs",
+      "started_at_utc": "2026-10-05T08:17:26.231Z",
+      "completed_at_utc": "2026-10-05T08:28:48.497Z",
+      "duration_ms": 682268,
+      "usage": {
+        "input_tokens": 3189367,
+        "cached_input_tokens": 3077888,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 14846,
+        "reasoning_output_tokens": 6123,
+        "total_tokens": 3204213
+      }
+    },
+    {
+      "number": 17,
+      "work": "Discuss iOS conclusions",
+      "started_at_utc": "2026-10-05T11:55:26.677Z",
+      "completed_at_utc": "2026-10-05T11:55:55.076Z",
+      "duration_ms": 28408,
+      "usage": {
+        "input_tokens": 203459,
+        "cached_input_tokens": 12032,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 572,
+        "reasoning_output_tokens": 474,
+        "total_tokens": 204031
+      }
+    },
+    {
+      "number": 18,
+      "work": "Summarize project status",
+      "started_at_utc": "2026-10-05T12:04:05.563Z",
+      "completed_at_utc": "2026-10-05T12:04:46.078Z",
+      "duration_ms": 40515,
+      "usage": {
+        "input_tokens": 408804,
+        "cached_input_tokens": 216064,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 922,
+        "reasoning_output_tokens": 366,
+        "total_tokens": 409726
+      }
+    },
+    {
+      "number": 19,
+      "work": "Clarify workflow experiment in README",
+      "started_at_utc": "2026-10-05T12:10:41.581Z",
+      "completed_at_utc": "2026-10-05T12:11:56.804Z",
+      "duration_ms": 75222,
+      "usage": {
+        "input_tokens": 829776,
+        "cached_input_tokens": 825216,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1791,
+        "reasoning_output_tokens": 500,
+        "total_tokens": 831567
+      }
+    }
+  ]
+}

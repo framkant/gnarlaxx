@@ -29,3 +29,4 @@ commits alongside the journal.
 16. [Presenting the language comparison](0016_presenting_the_language_comparison_20261005.md)
 17. [Beyond the small-game comparison](0017_beyond_the_small_game_comparison_20261005.md)
 18. [Clarifying the workflow experiment](0018_clarifying_the_workflow_experiment_20261005.md)
+19. [Reconstructing tokens and elapsed time](0019_reconstructing_tokens_and_elapsed_time_20261005.md)
