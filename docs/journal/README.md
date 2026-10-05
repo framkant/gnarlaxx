@@ -31,3 +31,4 @@ commits alongside the journal.
 18. [Clarifying the workflow experiment](0018_clarifying_the_workflow_experiment_20261005.md)
 19. [Reconstructing tokens and elapsed time](0019_reconstructing_tokens_and_elapsed_time_20261005.md)
 20. [Estimating cost and learning from the experiment](0020_estimating_cost_and_learning_from_the_experiment_20261005.md)
+21. [Independent review of human interventions](0021_independent_review_of_human_interventions_20261005.md)

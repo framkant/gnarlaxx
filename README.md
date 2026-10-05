@@ -23,6 +23,9 @@ See the [cost and learning notes](docs/learning-notes.md) for measured effort,
 an approximate API-equivalent cost, and suggestions for repeating or learning
 from the experiment.
 
+The [fresh-agent workflow review](docs/workflow-review.md) assesses which human
+interventions helped, which added costs, and what the recorded evidence can show.
+
 ## Current state
 
 The **C, Odin and Zig versions are playable on macOS**, using Sokol for graphics, input,
